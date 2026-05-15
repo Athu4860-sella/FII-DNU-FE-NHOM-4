@@ -1,111 +1,197 @@
-// ==========================
-// BASE URL
-// ==========================
+// app.js
 
-const BASE_API =
-    "https://69fc37aafce564e259177aba.mockapi.io/api/v1";
+// ================= BASE URL =================
 
-const DISHES_API =
-    `${BASE_API}/dishes`;
+const BASE_URL = "https://69fc37aafce564e259177aba.mockapi.io/api/v1";
 
-const CATEGORIES_API =
-    `${BASE_API}/categories`;
+// ================= APIs =================
 
+const dishesAPI = "https://69fc37aafce564e259177aba.mockapi.io/api/v1/dishes";
 
-// ==========================
-// DISHES API
-// ==========================
+const categoriesAPI =
+  "https://69fc37aafce564e259177aba.mockapi.io/api/v1/categories";
 
-// GET
-function getDishes() {
+// ================= GET CATEGORIES =================
 
-    return fetch(DISHES_API)
+async function getCategories() {
+  const response = await fetch(categoriesAPI);
 
-        .then(res => {
+  const data = await response.json();
 
-            if (!res.ok) {
-                throw new Error("Lỗi API");
-            }
+  let html = "";
 
-            return res.json();
-        })
+  data.forEach((category) => {
+    html += `
 
-        .catch(err => {
+            <div class="col-6 col-md-4 col-lg-2">
 
-            console.log(err);
+                <div class="category-card"
+                     onclick="filterCategory('${category.TenDanhMuc}')">
 
-            alert("Không thể tải dữ liệu");
-        });
+                    <img src="${category.HinhAnh}">
+
+                    <h6 class="mt-2">
+
+                        ${category.TenDanhMuc}
+
+                    </h6>
+
+                </div>
+
+            </div>
+
+        `;
+  });
+
+  $("#categories-list").html(html);
 }
 
+// ================= GET FOODS =================
 
-// CREATE
-function createDish(data) {
+let foodsData = [];
 
-    return fetch(DISHES_API, {
+async function getFoods() {
+  $("#loading").show();
 
-        method: "POST",
+  const response = await fetch(dishesAPI);
 
-        headers: {
-            "Content-Type": "application/json"
-        },
+  const data = await response.json();
 
-        body: JSON.stringify(data)
+  foodsData = data;
 
-    })
+  displayFoods(data);
 
-        .then(res => res.json());
+  $("#loading").hide();
 }
 
+// ================= DISPLAY FOODS =================
 
-// UPDATE
-function updateDish(id, data) {
+function displayFoods(data) {
+  let html = "";
 
-    return fetch(`${DISHES_API}/${id}`, {
+  data.forEach((food) => {
+    html += `
 
-        method: "PUT",
+            <div class="col-12 col-md-6 col-lg-4">
 
-        headers: {
-            "Content-Type": "application/json"
-        },
+                <div class="card food-card h-100">
 
-        body: JSON.stringify(data)
+                    <img src="${food.HinhAnh}"
+                         class="card-img-top">
 
-    })
+                    <div class="card-body d-flex flex-column">
 
-        .then(res => res.json());
+                        <span class="badge bg-success mb-2">
+
+                            ${food.DanhMuc}
+
+                        </span>
+
+                        <h5 class="card-title">
+
+                            ${food.TenMon}
+
+                        </h5>
+
+                        <div class="price mb-2">
+
+                            ${food.Gia}đ
+
+                        </div>
+
+                        <p class="text-warning">
+
+                            ⭐ ${food.DanhGia}
+
+                        </p>
+
+                        <p class="card-text">
+
+                            ${food.MoTa}
+
+                        </p>
+
+                        <button
+                                class="btn btn-success mt-auto"
+                                onclick='showDetail(${JSON.stringify(food)})'>
+
+                            Xem chi tiết
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        `;
+  });
+
+  $("#menu-list").html(html);
 }
 
+// ================= SEARCH =================
 
-// DELETE
-function deleteDish(id) {
+$("#searchInput").on("keyup", function () {
+  const keyword = $(this).val().toLowerCase();
 
-    return fetch(`${DISHES_API}/${id}`, {
+  const filteredFoods = foodsData.filter((food) =>
+    food.TenMon.toLowerCase().includes(keyword),
+  );
 
-        method: "DELETE"
+  displayFoods(filteredFoods);
+});
 
-    })
+// ================= FILTER CATEGORY =================
 
-        .then(res => res.json());
+function filterCategory(category) {
+  const filteredFoods = foodsData.filter((food) => food.DanhMuc === category);
+
+  displayFoods(filteredFoods);
 }
 
+// ================= MODAL =================
 
+function showDetail(food) {
+  const html = `
 
-// ==========================
-// CATEGORIES API
-// ==========================
+        <img src="${food.HinhAnh}"
+             class="img-fluid rounded mb-3">
 
-// GET CATEGORY
-function getCategories() {
+        <h3>
+            ${food.TenMon}
+        </h3>
 
-    return fetch(CATEGORIES_API)
+        <p class="text-success fs-4 fw-bold">
 
-        .then(res => res.json())
+            ${food.Gia}đ
 
-        .catch(err => {
+        </p>
 
-            console.log(err);
+        <p>
 
-            alert("Không tải được category");
-        });
+            ⭐ ${food.DanhGia}
+
+        </p>
+
+        <p>
+
+            ${food.MoTa}
+
+        </p>
+
+    `;
+
+  $("#modal-body").html(html);
+
+  const modal = new bootstrap.Modal(document.getElementById("foodModal"));
+
+  modal.show();
 }
+
+// ================= RUN =================
+
+getCategories();
+
+getFoods();
