@@ -2,11 +2,6 @@ body {
   background: #f8f9fa;
 }
 
-.card img {
-  height: 220px;
-  object-fit: cover;
-}
-
 .card {
   transition: 0.3s;
 }
@@ -15,20 +10,25 @@ body {
   transform: translateY(-5px);
 }
 
-.badge-status {
-  font-size: 14px;
+.card img {
+  height: 220px;
+  object-fit: cover;
 }
 
-.error {
-  border: 2px solid red;
+.table img {
+  object-fit: cover;
 }
 
 #loading {
   display: none;
 }
 
-@media(max-width:576px) {
+@media (max-width: 576px) {
   h2 {
     font-size: 22px;
+  }
+
+  .navbar-brand {
+    font-size: 18px;
   }
 }
