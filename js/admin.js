@@ -1,278 +1,361 @@
-const adminDishList =
-    document.getElementById("adminDishList");
+// admin.js
 
-const dishForm =
-    document.getElementById("dishForm");
+// ================= BASE URL =================
 
-let editingId = null;
+const BASE_URL = "https://69fc37aafce564e259177aba.mockapi.io/api/v1";
 
+// ================= APIs =================
 
-// LOAD CATEGORY
-function loadCategories() {
+const dishesAPI = "https://69fc37aafce564e259177aba.mockapi.io/api/v1/dishes";
 
-    getCategories()
+const categoriesAPI =
+  "https://69fc37aafce564e259177aba.mockapi.io/api/v1/categories";
 
-        .then(data => {
+// ================= DATA =================
 
-            let html = "";
+let foodsData = [];
 
-            data.forEach(category => {
+// ================= GET FOODS =================
 
-                html += `
-                
-                <option value="${category.name}">
-                    ${category.name}
+function getFoods() {
+  $("#loading").show();
+
+  $.ajax({
+    url: dishesAPI,
+
+    method: "GET",
+
+    success: function (data) {
+      foodsData = data;
+
+      displayFoods(data);
+
+      $("#loading").hide();
+    },
+  });
+}
+
+// ================= DISPLAY FOODS =================
+
+function displayFoods(data) {
+  let html = "";
+
+  data.forEach((food, index) => {
+    html += `
+
+            <tr>
+
+                <td>
+                    ${index + 1}
+                </td>
+
+                <td>
+
+                    <img src="${food.HinhAnh}">
+
+                </td>
+
+                <td>
+
+                    <strong>
+
+                        ${food.TenMon}
+
+                    </strong>
+
+                    <br>
+
+                    <small>
+
+                        ${food.MoTa}
+
+                    </small>
+
+                </td>
+
+                <td>
+
+                    <span class="badge bg-success">
+
+                        ${food.DanhMuc}
+
+                    </span>
+
+                </td>
+
+                <td>
+
+                    ${food.Gia}đ
+
+                </td>
+
+                <td>
+
+                    ⭐ ${food.DanhGia}
+
+                </td>
+
+                <td>
+
+                    <button
+                            class="action-btn edit-btn"
+                            onclick="editFood('${food.id}')">
+
+                        <i class="fa-solid fa-pen"></i>
+
+                    </button>
+
+                    <button
+                            class="action-btn delete-btn"
+                            onclick="deleteFood('${food.id}')">
+
+                        <i class="fa-solid fa-trash"></i>
+
+                    </button>
+
+                </td>
+
+            </tr>
+
+        `;
+  });
+
+  $("#foodTable").html(html);
+}
+
+// ================= GET CATEGORIES =================
+
+function getCategories() {
+  $.ajax({
+    url: categoriesAPI,
+
+    method: "GET",
+
+    success: function (data) {
+      let html = `
+
+                <option value="">
+                    Chọn danh mục
                 </option>
-                `;
-            });
 
-            document.getElementById("category").innerHTML =
-                html;
-        });
+            `;
+
+      data.forEach((category) => {
+        html += `
+
+                    <option>
+
+                        ${category.TenDanhMuc}
+
+                    </option>
+
+                `;
+      });
+
+      $("#DanhMuc").html(html);
+    },
+  });
 }
 
+// ================= ADD FOOD =================
 
-// LOAD DISHES
-function loadAdminData() {
+$("#foodForm").submit(function (e) {
+  e.preventDefault();
+  // GET VALUES
 
-    $("#adminDishList")
-        .hide()
-        .fadeIn(500);
+  const TenMon = $("#TenMon").val();
 
-    getDishes()
+  const Gia = $("#Gia").val();
 
-        .then(data => {
+  const DanhMuc = $("#DanhMuc").val();
 
-            let html = "";
+  const HinhAnh = $("#HinhAnh").val();
 
-            data.forEach(dish => {
+  const DanhGia = $("#DanhGia").val();
 
-                html += `
-                
-                <tr>
+  const MoTa = $("#MoTa").val();
 
-                    <td>
-                        <img src="${dish.image}"
-                             width="80"
-                             class="rounded">
-                    </td>
+  // RESET ERROR
 
-                    <td>${dish.name}</td>
+  $("#errorTenMon").text("");
 
-                    <td>
-                        ${formatPrice(dish.price)}
-                    </td>
+  $("#errorGia").text("");
 
-                    <td>${dish.category}</td>
+  $("#errorDanhMuc").text("");
 
-                    <td>
+  // VALIDATION
 
-                        <span class="badge
-                        ${dish.available
-                            ? "bg-success"
-                            : "bg-secondary"}">
+  if (TenMon === "") {
+    $("#errorTenMon").text("Tên món không được để trống");
 
-                            ${dish.available
-                                ? "Còn phục vụ"
-                                : "Hết món"}
+    return;
+  }
 
-                        </span>
+  if (Gia === "") {
+    $("#errorGia").text("Giá món không được để trống");
 
-                    </td>
+    return;
+  }
 
-                    <td>
+  if (DanhMuc === "") {
+    $("#errorDanhMuc").text("Vui lòng chọn danh mục");
 
-                        <button class="btn btn-warning btn-sm editBtn"
-                            data-id="${dish.id}">
+    return;
+  }
 
-                            Sửa
+  // OBJECT
 
-                        </button>
+  const newFood = {
+    TenMon,
+    Gia,
+    DanhMuc,
+    HinhAnh,
+    DanhGia,
+    MoTa,
+  };
 
-                        <button class="btn btn-danger btn-sm deleteBtn"
-                            data-id="${dish.id}">
+  // POST API
 
-                            Xóa
+  $.ajax({
+    url: dishesAPI,
 
-                        </button>
+    method: "POST",
 
-                        <button class="btn btn-secondary btn-sm toggleBtn"
-                            data-id="${dish.id}"
-                            data-status="${dish.available}">
+    data: newFood,
 
-                            Toggle
+    success: function () {
+      alert("Thêm món ăn thành công");
 
-                        </button>
+      $("#foodForm")[0].reset();
 
-                    </td>
+      getFoods();
 
-                </tr>
-                `;
-            });
+      const modal = bootstrap.Modal.getInstance(
+        document.getElementById("foodModal"),
+      );
 
-            adminDishList.innerHTML = html;
-        });
+      modal.hide();
+    },
+  });
+});
+
+// ================= DELETE =================
+
+function deleteFood(id) {
+  const confirmDelete = confirm("Bạn có chắc muốn xóa món ăn này?");
+
+  if (confirmDelete) {
+    $.ajax({
+      url: `${dishesAPI}/${id}`,
+
+      method: "DELETE",
+
+      success: function () {
+        alert("Xóa thành công");
+
+        getFoods();
+      },
+    });
+  }
 }
 
-loadAdminData();
-loadCategories();
+// ================= EDIT =================
 
+function editFood(id) {
+  const food = foodsData.find((item) => item.id == id);
 
-// SUBMIT FORM
-dishForm.addEventListener("submit", function (e) {
+  // FILL FORM
 
+  $("#TenMon").val(food.TenMon);
+
+  $("#Gia").val(food.Gia);
+
+  $("#DanhMuc").val(food.DanhMuc);
+
+  $("#HinhAnh").val(food.HinhAnh);
+
+  $("#DanhGia").val(food.DanhGia);
+
+  $("#MoTa").val(food.MoTa);
+
+  // CHANGE TITLE
+
+  $(".modal-title").text("Cập nhật món ăn");
+
+  // SHOW MODAL
+
+  const modal = new bootstrap.Modal(document.getElementById("foodModal"));
+
+  modal.show();
+
+  // REMOVE OLD SUBMIT
+
+  $("#foodForm").off("submit");
+
+  // UPDATE SUBMIT
+
+  $("#foodForm").submit(function (e) {
     e.preventDefault();
 
-    let name =
-        document.getElementById("name").value;
+    const updatedFood = {
+      TenMon: $("#TenMon").val(),
 
-    let price =
-        document.getElementById("price").value;
+      Gia: $("#Gia").val(),
 
-    let image =
-        document.getElementById("image").value;
+      DanhMuc: $("#DanhMuc").val(),
 
-    let category =
-        document.getElementById("category").value;
+      HinhAnh: $("#HinhAnh").val(),
 
+      DanhGia: $("#DanhGia").val(),
 
-    // VALIDATE
-    if (!validateDish(name, price, image)) {
-        return;
-    }
-
-
-    let dishData = {
-
-        name,
-        price,
-        image,
-        category,
-
-        available: true
+      MoTa: $("#MoTa").val(),
     };
 
+    $.ajax({
+      url: `${dishesAPI}/${id}`,
 
-    // UPDATE
-    if (editingId) {
+      method: "PUT",
 
-        updateDish(editingId, dishData)
+      data: updatedFood,
+      success: function () {
+        alert("Cập nhật thành công");
 
-            .then(() => {
+        $("#foodForm")[0].reset();
 
-                loadAdminData();
+        modal.hide();
 
-                dishForm.reset();
+        getFoods();
 
-                editingId = null;
+        resetFormSubmit();
+      },
+    });
+  });
+}
 
-                bootstrap.Modal
-                    .getInstance(
-                        document.getElementById("dishModal")
-                    )
-                    .hide();
-            });
+// ================= RESET SUBMIT =================
 
-    }
+function resetFormSubmit() {
+  $("#foodForm").off("submit");
 
-    // CREATE
-    else {
+  $("#foodForm").submit(function (e) {
+    e.preventDefault();
+  });
+}
 
-        createDish(dishData)
+// ================= SEARCH =================
 
-            .then(() => {
+$("#searchInput").on("keyup", function () {
+  const keyword = $(this).val().toLowerCase();
 
-                loadAdminData();
+  const filteredFoods = foodsData.filter((food) =>
+    food.TenMon.toLowerCase().includes(keyword),
+  );
 
-                dishForm.reset();
-
-                bootstrap.Modal
-                    .getInstance(
-                        document.getElementById("dishModal")
-                    )
-                    .hide();
-            });
-    }
+  displayFoods(filteredFoods);
 });
 
+// ================= RUN =================
 
-// DELETE
-$(document).on("click", ".deleteBtn", function () {
+getFoods();
 
-    let id =
-        $(this).data("id");
-
-    if (confirm("Bạn có chắc muốn xóa?")) {
-
-        deleteDish(id)
-
-            .then(() => {
-
-                loadAdminData();
-
-                $("#liveToast")
-                    .toast("show");
-            });
-    }
-});
-
-
-// EDIT
-$(document).on("click", ".editBtn", function () {
-
-    let id =
-        $(this).data("id");
-
-    getDishes()
-
-        .then(data => {
-
-            let dish =
-                data.find(item => item.id == id);
-
-            document.getElementById("name").value =
-                dish.name;
-
-            document.getElementById("price").value =
-                dish.price;
-
-            document.getElementById("image").value =
-                dish.image;
-
-            document.getElementById("category").value =
-                dish.category;
-
-            editingId = id;
-
-            $("#dishModal")
-                .modal("show");
-        });
-});
-
-
-// TOGGLE STATUS
-$(document).on("click", ".toggleBtn", function () {
-
-    let id =
-        $(this).data("id");
-
-    let status =
-        $(this).data("status") === true;
-
-    updateDish(id, {
-
-        available: !status
-
-    })
-
-        .then(() => {
-
-            loadAdminData();
-        });
-});
-
-
-// EFFECT
-$(".table")
-    .hide()
-    .slideDown(800);
+getCategories();
