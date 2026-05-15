@@ -1,0 +1,34 @@
+body {
+  background: #f8f9fa;
+}
+
+.card img {
+  height: 220px;
+  object-fit: cover;
+}
+
+.card {
+  transition: 0.3s;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+}
+
+.badge-status {
+  font-size: 14px;
+}
+
+.error {
+  border: 2px solid red;
+}
+
+#loading {
+  display: none;
+}
+
+@media(max-width:576px) {
+  h2 {
+    font-size: 22px;
+  }
+}
