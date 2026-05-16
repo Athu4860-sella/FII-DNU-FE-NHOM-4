@@ -1,53 +1,44 @@
-// FORMAT PRICE
+// ================= PRICE FORMATTING =================
+// Định dạng giá tiền theo tiếng Việt (ví dụ: 1000000 -> 1.000.000đ)
 function formatPrice(price) {
-
-    return Number(price)
-        .toLocaleString("vi-VN") + "đ";
+  const numPrice =
+    typeof price === "string" ? Number(price.replace(/\./g, "")) : price;
+  return numPrice.toLocaleString("vi-VN") + "đ";
+}
+// ================= IMAGE VALIDATION =================
+// Kiểm tra URL ảnh hợp lệ (png, jpg, jpeg, webp)
+function validateImage(url) {
+  return /(https?:\/\/.*\.(?:png|jpg|jpeg|webp))/i.test(url);
 }
 
-// VALID URL
-function isValidURL(url) {
+// ================= TOAST NOTIFICATIONS =================
+// Hiển thị thông báo nhanh (toast) lên trang - Sử dụng jQuery
+function showToast(message, type = "success") {
+  const toast = $("#toast");
 
-    return url.startsWith("http");
+  toast.html(`
+    <div class="toast align-items-center text-bg-${type} border-0 show">
+      <div class="d-flex">
+        <div class="toast-body">
+          ${message}
+        </div>
+      </div>
+    </div>
+  `);
+
+  // Tự động ẩn sau 3 giây
+  setTimeout(() => {
+    toast.html("");
+  }, 3000);
 }
 
+// ================= LOADING MANAGEMENT =================
+// Hiển thị biểu tượng loading - Sử dụng jQuery cho consistency
+function showLoading() {
+  $("#loading").show();
+}
 
-// VALIDATE FORM
-function validateDish(name, price, image) {
-
-    let isValid = true;
-
-    // RESET
-    document.getElementById("nameError").innerHTML = "";
-    document.getElementById("priceError").innerHTML = "";
-    document.getElementById("imageError").innerHTML = "";
-
-    // NAME
-    if (name.trim() === "") {
-
-        document.getElementById("nameError").innerHTML =
-            "Tên không được rỗng";
-
-        isValid = false;
-    }
-
-    // PRICE
-    if (price <= 0) {
-
-        document.getElementById("priceError").innerHTML =
-            "Giá phải lớn hơn 0";
-
-        isValid = false;
-    }
-
-    // IMAGE
-    if (!isValidURL(image)) {
-
-        document.getElementById("imageError").innerHTML =
-            "URL ảnh không hợp lệ";
-
-        isValid = false;
-    }
-
-    return isValid;
+// Ẩn biểu tượng loading - Sử dụng jQuery cho consistency
+function hideLoading() {
+  $("#loading").hide();
 }

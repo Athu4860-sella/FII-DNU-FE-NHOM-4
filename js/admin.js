@@ -85,7 +85,7 @@ function displayFoods(data) {
 
                 <td>
 
-                    ${food.Gia}đ
+                    $formatPrice{food.Gia}đ
 
                 </td>
 
