@@ -115,9 +115,16 @@ body {
 ========================= */
 
 .info-box {
+  position: sticky;
   top: 100px;
 }
 
+@media (max-width: 992px) {
+  .info-box {
+    position: static;
+    margin-top: 30px;
+  }
+}
 /* =========================
    ADMIN LAYOUT
 ========================= */

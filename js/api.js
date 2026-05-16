@@ -128,7 +128,9 @@ function displayFoods(data) {
         `;
   });
 
-  $("#menu-list").html(html);
+  $("#menu-list").html(html);// chỗ này là id của div chứa danh sách món ăn, 
+  // nó sẽ được thay thế bằng html mới mỗi khi
+  //  hiển thị lại danh sách món ăn 
 }
 
 // ================= SEARCH =================
