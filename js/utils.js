@@ -5,7 +5,6 @@ function formatPrice(price) {
         .toLocaleString("vi-VN") + "đ";
 }
 
-
 // VALID URL
 function isValidURL(url) {
 
