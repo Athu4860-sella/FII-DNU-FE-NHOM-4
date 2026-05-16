@@ -95,7 +95,7 @@ function displayFoods(data) {
 
                         <div class="price mb-2">
 
-                            ${food.Gia}đ
+                            ${formatPrice(food.Gia)}
 
                         </div>
 
@@ -165,7 +165,7 @@ function showDetail(food) {
 
         <p class="text-success fs-4 fw-bold">
 
-            ${food.Gia}đ
+            ${formatPrice(food.Gia)}
 
         </p>
 

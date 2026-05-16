@@ -1,44 +1,71 @@
-// ================= PRICE FORMATTING =================
-// Định dạng giá tiền theo tiếng Việt (ví dụ: 1000000 -> 1.000.000đ)
+// utils.js
+
+/* =========================
+   FORMAT TIỀN
+========================= */
+
 function formatPrice(price) {
-  const numPrice =
-    typeof price === "string" ? Number(price.replace(/\./g, "")) : price;
-  return numPrice.toLocaleString("vi-VN") + "đ";
-}
-// ================= IMAGE VALIDATION =================
-// Kiểm tra URL ảnh hợp lệ (png, jpg, jpeg, webp)
-function validateImage(url) {
-  return /(https?:\/\/.*\.(?:png|jpg|jpeg|webp))/i.test(url);
+  return Number(price).toLocaleString("vi-VN") + "đ";
 }
 
-// ================= TOAST NOTIFICATIONS =================
-// Hiển thị thông báo nhanh (toast) lên trang - Sử dụng jQuery
-function showToast(message, type = "success") {
-  const toast = $("#toast");
+/* =========================
+   VALIDATE RỖNG
+========================= */
 
-  toast.html(`
-    <div class="toast align-items-center text-bg-${type} border-0 show">
-      <div class="d-flex">
-        <div class="toast-body">
-          ${message}
-        </div>
-      </div>
-    </div>
-  `);
-
-  // Tự động ẩn sau 3 giây
-  setTimeout(() => {
-    toast.html("");
-  }, 3000);
+function isEmpty(value) {
+  return value.trim() === "";
 }
 
-// ================= LOADING MANAGEMENT =================
-// Hiển thị biểu tượng loading - Sử dụng jQuery cho consistency
-function showLoading() {
-  $("#loading").show();
+/* =========================
+   VALIDATE GIÁ
+========================= */
+
+function isValidPrice(price) {
+  return Number(price) > 0;
 }
 
-// Ẩn biểu tượng loading - Sử dụng jQuery cho consistency
-function hideLoading() {
-  $("#loading").hide();
+/* =========================
+   HIỂN THỊ SAO
+========================= */
+
+function renderStars(rating) {
+  let stars = "";
+
+  for (let i = 1; i <= 5; i++) {
+    if (i <= rating) {
+      stars += `<i class="fa-solid fa-star text-warning"></i>`;
+    } else {
+      stars += `<i class="fa-regular fa-star text-warning"></i>`;
+    }
+  }
+
+  return stars;
+}
+
+/* =========================
+   CẮT CHỮ DÀI
+========================= */
+
+function truncateText(text, maxLength = 80) {
+  if (text.length > maxLength) {
+    return text.substring(0, maxLength) + "...";
+  }
+
+  return text;
+}
+
+/* =========================
+   RANDOM ID
+========================= */
+
+function generateId() {
+  return Math.floor(Math.random() * 100000);
+}
+
+/* =========================
+   THÔNG BÁO
+========================= */
+
+function showMessage(message) {
+  alert(message);
 }
