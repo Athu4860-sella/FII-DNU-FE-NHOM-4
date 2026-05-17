@@ -1,168 +1,95 @@
 // admin.js
 
 // ================= BASE URL =================
-
 const BASE_URL = "https://69fc37aafce564e259177aba.mockapi.io/api/v1";
 
-// ================= APIs =================
+const dishesAPI = BASE_URL + "/dishes";
+const categoriesAPI = BASE_URL + "/categories";
+const usersAPI = "https://6a096abce7e3f433d483134b.mockapi.io/admin";
 
-const dishesAPI = "https://69fc37aafce564e259177aba.mockapi.io/api/v1/dishes";
-
-const categoriesAPI =
-  "https://69fc37aafce564e259177aba.mockapi.io/api/v1/categories";
-
-// ================= USERS API =================
-const usersAPI = "https://6a096abce7e3f433d483134b.mockapi.io/admin"
-// ================= CHECK LOGIN =================
-
-const isLogin = localStorage.getItem("isAdminLogin");
-
-if (isLogin === "true") {
-
-  $("#loginPage").hide();
-
-  $("#adminPage").removeClass("d-none");
-
-}
-// ================= DATA =================
-
+// ================= STATE =================
 let foodsData = [];
+let editId = null;
+
+// ================= LOGOUT =================
+function logout() {
+  localStorage.removeItem("user");
+  location.reload();
+}
 
 // ================= GET FOODS =================
-
 function getFoods() {
   $("#loading").show();
 
   $.ajax({
     url: dishesAPI,
-
     method: "GET",
-
     success: function (data) {
       foodsData = data;
-
       displayFoods(data);
-
       $("#loading").hide();
     },
   });
 }
 
-// ================= DISPLAY FOODS =================
-
+// ================= DISPLAY =================
 function displayFoods(data) {
   let html = "";
 
   data.forEach((food, index) => {
     html += `
+      <tr>
+        <td>${index + 1}</td>
 
-            <tr>
+        <td>
+          <img src="${food.HinhAnh}" width="60">
+        </td>
 
-                <td>
-                    ${index + 1}
-                </td>
+        <td>
+          <strong>${food.TenMon}</strong><br>
+          <small>${food.MoTa || ""}</small>
+        </td>
 
-                <td>
+        <td>
+          <span class="badge bg-success">${food.DanhMuc}</span>
+        </td>
 
-                    <img src="${food.HinhAnh}">
+        <td>${formatPrice(food.Gia)}</td>
 
-                </td>
+        <td>⭐ ${food.DanhGia}</td>
 
-                <td>
+        <td>
+          <button class="action-btn edit-btn"
+            onclick="editFood('${food.id}')">
+            <i class="fa-solid fa-pen"></i>
+          </button>
 
-                    <strong>
-
-                        ${food.TenMon}
-
-                    </strong>
-
-                    <br>
-
-                    <small>
-
-                        ${food.MoTa}
-
-                    </small>
-
-                </td>
-
-                <td>
-
-                    <span class="badge bg-success">
-
-                        ${food.DanhMuc}
-
-                    </span>
-
-                </td>
-
-                <td>
-
-                    ${formatPrice(food.Gia)}
-
-                </td>
-
-                <td>
-
-                    ⭐ ${food.DanhGia}
-
-                </td>
-
-                <td>
-
-                    <button
-                            class="action-btn edit-btn"
-                            onclick="editFood('${food.id}')">
-
-                        <i class="fa-solid fa-pen"></i>
-
-                    </button>
-
-                    <button
-                            class="action-btn delete-btn"
-                            onclick="deleteFood('${food.id}')">
-
-                        <i class="fa-solid fa-trash"></i>
-
-                    </button>
-
-                </td>
-
-            </tr>
-
-        `;
+          <button class="action-btn delete-btn"
+            onclick="deleteFood('${food.id}')">
+            <i class="fa-solid fa-trash"></i>
+          </button>
+        </td>
+      </tr>
+    `;
   });
 
   $("#foodTable").html(html);
 }
 
-// ================= GET CATEGORIES =================
-
+// ================= CATEGORY =================
 function getCategories() {
   $.ajax({
     url: categoriesAPI,
-
     method: "GET",
-
     success: function (data) {
-      let html = `
+      let html = `<option value="">Chọn danh mục</option>`;
 
-                <option value="">
-                    Chọn danh mục
-                </option>
-
-            `;
-
-      data.forEach((category) => {
+      data.forEach((c) => {
         html += `
-
-                    <option>
-
-                        ${category.TenDanhMuc}
-
-                    </option>
-
-                `;
+          <option value="${c.TenDanhMuc}">
+            ${c.TenDanhMuc}
+          </option>
+        `;
       });
 
       $("#DanhMuc").html(html);
@@ -171,15 +98,14 @@ function getCategories() {
 }
 
 // ================= LOGIN =================
-
 $("#loginForm").submit(async function (e) {
   e.preventDefault();
 
   const username = $("#username").val();
   const password = $("#password").val();
 
-  const response = await fetch(usersAPI);
-  const users = await response.json();
+  const res = await fetch(usersAPI);
+  const users = await res.json();
 
   const user = users.find(
     (u) => u.username === username && u.password === password,
@@ -187,220 +113,124 @@ $("#loginForm").submit(async function (e) {
 
   if (user) {
     localStorage.setItem("user", JSON.stringify(user));
+
     $("#loginPage").hide();
     $("#adminPage").removeClass("d-none");
+
     alert("Đăng nhập thành công");
   } else {
     alert("Sai tài khoản hoặc mật khẩu");
   }
 });
 
-// ================= ADD FOOD =================
-
+// ================= ADD + EDIT (FIXED) =================
 $("#foodForm").submit(function (e) {
   e.preventDefault();
-  // GET VALUES
 
-  const TenMon = $("#TenMon").val();
-
-  const Gia = $("#Gia").val();
-
-  const DanhMuc = $("#DanhMuc").val();
-
-  const HinhAnh = $("#HinhAnh").val();
-
-  const DanhGia = $("#DanhGia").val();
-
-  const MoTa = $("#MoTa").val();
-
-  // RESET ERROR
-
-  $("#errorTenMon").text("");
-
-  $("#errorGia").text("");
-
-  $("#errorDanhMuc").text("");
-
-  // VALIDATION
-
-  if (TenMon === "") {
-    $("#errorTenMon").text("Tên món không được để trống");
-
-    return;
-  }
-
-  if (Gia === "") {
-    $("#errorGia").text("Giá món không được để trống");
-
-    return;
-  }
-
-  if (DanhMuc === "") {
-    $("#errorDanhMuc").text("Vui lòng chọn danh mục");
-
-    return;
-  }
-
-  // OBJECT
-
-  const newFood = {
-    TenMon,
-    Gia,
-    DanhMuc,
-    HinhAnh,
-    DanhGia,
-    MoTa,
+  const foodData = {
+    TenMon: $("#TenMon").val(),
+    Gia: $("#Gia").val(),
+    DanhMuc: $("#DanhMuc").val(),
+    HinhAnh: $("#HinhAnh").val(),
+    DanhGia: $("#DanhGia").val(),
+    MoTa: $("#MoTa").val(),
   };
 
-  // POST API
+  // ================= EDIT =================
+  if (editId) {
+    $.ajax({
+      url: `${dishesAPI}/${editId}`,
+      method: "PUT",
+      data: foodData,
+      success: function () {
+        alert("Cập nhật thành công");
 
+        $("#foodForm")[0].reset();
+        editId = null;
+
+        $(".modal-title").text("Thêm món ăn");
+
+        bootstrap.Modal.getInstance(
+          document.getElementById("foodModal"),
+        ).hide();
+
+        getFoods();
+      },
+    });
+
+    return;
+  }
+
+  // ================= ADD =================
   $.ajax({
     url: dishesAPI,
-
     method: "POST",
-
-    data: newFood,
-
+    data: foodData,
     success: function () {
       alert("Thêm món ăn thành công");
 
       $("#foodForm")[0].reset();
 
+      bootstrap.Modal.getInstance(document.getElementById("foodModal")).hide();
+
       getFoods();
-
-      const modal = bootstrap.Modal.getInstance(
-        document.getElementById("foodModal"),
-      );
-
-      modal.hide();
     },
   });
 });
 
-// ================= DELETE =================
-
-function deleteFood(id) {
-  const confirmDelete = confirm("Bạn có chắc muốn xóa món ăn này?");
-
-  if (confirmDelete) {
-    $.ajax({
-      url: `${dishesAPI}/${id}`,
-
-      method: "DELETE",
-
-      success: function () {
-        alert("Xóa thành công");
-
-        getFoods();
-      },
-    });
-  }
-}
-
-// ================= EDIT =================
-
+// ================= EDIT FIXED =================
 function editFood(id) {
-  const food = foodsData.find((item) => item.id == id);
+  console.log("CLICK EDIT ID:", id);
+  console.log("DATA:", foodsData);
 
-  // FILL FORM
+  const food = foodsData.find((item) => String(item.id) === String(id));
+
+  if (!food) {
+    alert("Không tìm thấy món ăn!");
+    return;
+  }
+
+  editId = id;
 
   $("#TenMon").val(food.TenMon);
-
   $("#Gia").val(food.Gia);
-
   $("#DanhMuc").val(food.DanhMuc);
-
   $("#HinhAnh").val(food.HinhAnh);
-
   $("#DanhGia").val(food.DanhGia);
-
   $("#MoTa").val(food.MoTa);
 
-  // CHANGE TITLE
-
   $(".modal-title").text("Cập nhật món ăn");
-
-  // SHOW MODAL
 
   const modal = new bootstrap.Modal(document.getElementById("foodModal"));
 
   modal.show();
-
-  // REMOVE OLD SUBMIT
-
-  $("#foodForm").off("submit");
-
-  // UPDATE SUBMIT
-
-  $("#foodForm").submit(function (e) {
-    e.preventDefault();
-
-    const updatedFood = {
-      TenMon: $("#TenMon").val(),
-
-      Gia: $("#Gia").val(),
-
-      DanhMuc: $("#DanhMuc").val(),
-
-      HinhAnh: $("#HinhAnh").val(),
-
-      DanhGia: $("#DanhGia").val(),
-
-      MoTa: $("#MoTa").val(),
-    };
-
-    $.ajax({
-      url: `${dishesAPI}/${id}`,
-
-      method: "PUT",
-
-      data: updatedFood,
-      success: function () {
-        alert("Cập nhật thành công");
-
-        $("#foodForm")[0].reset();
-
-        modal.hide();
-
-        getFoods();
-
-        resetFormSubmit();
-      },
-    });
-  });
 }
 
-// ================= RESET SUBMIT =================
+// ================= DELETE =================
+function deleteFood(id) {
+  if (!confirm("Bạn có chắc muốn xóa?")) return;
 
-function resetFormSubmit() {
-  $("#foodForm").off("submit");
-
-  $("#foodForm").submit(function (e) {
-    e.preventDefault();
+  $.ajax({
+    url: `${dishesAPI}/${id}`,
+    method: "DELETE",
+    success: function () {
+      alert("Xóa thành công");
+      getFoods();
+    },
   });
-}
-
-// ================= LOGOUT =================
-
-function logout() {
-  localStorage.removeItem("user");
-  location.reload();
 }
 
 // ================= SEARCH =================
-
 $("#searchInput").on("keyup", function () {
-  const keyword = $(this).val().toLowerCase();
+  const key = $(this).val().toLowerCase();
 
-  const filteredFoods = foodsData.filter((food) =>
-    food.TenMon.toLowerCase().includes(keyword),
+  const filtered = foodsData.filter((f) =>
+    f.TenMon.toLowerCase().includes(key),
   );
 
-  displayFoods(filteredFoods);
+  displayFoods(filtered);
 });
 
-// ================= RUN =================
-
+// ================= INIT =================
 getFoods();
-
 getCategories();
