@@ -453,10 +453,37 @@ body {
    SEARCH
 ========================= */
 
-.search-box {
-  margin-bottom: 20px;
+.search-wrapper{
+   display: flex;
+   align-items: center;
+   gap: 10px;
 }
 
+.search-input{
+
+   width: 0;
+
+   opacity: 0;
+
+   padding: 8px 12px;
+
+   border-radius: 30px;
+
+   border: 1px solid #ddd;
+
+   outline: none;
+
+   transition: 0.4s;
+
+   overflow: hidden;
+}
+
+.search-input.active{
+
+   width: 220px;
+
+   opacity: 1;
+}
 /* =========================
    TABLE
 ========================= */
@@ -548,4 +575,113 @@ footer {
 
     align-items: flex-start;
   }
+}
+/* =========================
+   NAV ICON
+========================= */
+
+.nav-icon {
+  font-size: 18px;
+
+  cursor: pointer;
+
+  transition: 0.3s;
+}
+
+.nav-icon:hover {
+  color: #198754;
+
+  transform: translateY(-2px);
+}
+
+/* =========================
+   USER BUTTON
+========================= */
+
+.user-btn {
+  width: 42px;
+
+  height: 42px;
+
+  border-radius: 50%;
+
+  border: none;
+
+  background: #198754;
+
+  color: white;
+
+  transition: 0.3s;
+}
+
+.user-btn:hover {
+  background: #157347;
+
+  color: white;
+
+  transform: translateY(-2px);
+}
+
+/* =========================
+   DROPDOWN
+========================= */
+
+.dropdown-menu {
+  border-radius: 16px;
+
+  padding: 10px;
+}
+
+.dropdown-item {
+  border-radius: 10px;
+
+  padding: 10px 14px;
+
+  transition: 0.3s;
+}
+
+.dropdown-item:hover {
+  background: #f1fdf5;
+}
+
+/* =========================
+   CART
+========================= */
+
+.cart-wrapper{
+
+   position: relative;
+
+   cursor: pointer;
+
+}
+
+.cart-count{
+
+   position: absolute;
+
+   top: -8px;
+
+   right: -10px;
+
+   background: red;
+
+   color: white;
+
+   width: 20px;
+
+   height: 20px;
+
+   border-radius: 50%;
+
+   font-size: 12px;
+
+   display: flex;
+
+   align-items: center;
+
+   justify-content: center;
+
+   font-weight: bold;
+
 }

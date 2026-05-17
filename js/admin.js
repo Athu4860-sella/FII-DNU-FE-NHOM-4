@@ -11,6 +11,19 @@ const dishesAPI = "https://69fc37aafce564e259177aba.mockapi.io/api/v1/dishes";
 const categoriesAPI =
   "https://69fc37aafce564e259177aba.mockapi.io/api/v1/categories";
 
+// ================= USERS API =================
+const usersAPI = "https://6a096abce7e3f433d483134b.mockapi.io/admin"
+// ================= CHECK LOGIN =================
+
+const isLogin = localStorage.getItem("isAdminLogin");
+
+if (isLogin === "true") {
+
+  $("#loginPage").hide();
+
+  $("#adminPage").removeClass("d-none");
+
+}
 // ================= DATA =================
 
 let foodsData = [];
@@ -156,6 +169,31 @@ function getCategories() {
     },
   });
 }
+
+// ================= LOGIN =================
+
+$("#loginForm").submit(async function (e) {
+  e.preventDefault();
+
+  const username = $("#username").val();
+  const password = $("#password").val();
+
+  const response = await fetch(usersAPI);
+  const users = await response.json();
+
+  const user = users.find(
+    (u) => u.username === username && u.password === password,
+  );
+
+  if (user) {
+    localStorage.setItem("user", JSON.stringify(user));
+    $("#loginPage").hide();
+    $("#adminPage").removeClass("d-none");
+    alert("Đăng nhập thành công");
+  } else {
+    alert("Sai tài khoản hoặc mật khẩu");
+  }
+});
 
 // ================= ADD FOOD =================
 
@@ -340,6 +378,13 @@ function resetFormSubmit() {
   $("#foodForm").submit(function (e) {
     e.preventDefault();
   });
+}
+
+// ================= LOGOUT =================
+
+function logout() {
+  localStorage.removeItem("user");
+  location.reload();
 }
 
 // ================= SEARCH =================

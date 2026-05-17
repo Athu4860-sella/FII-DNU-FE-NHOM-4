@@ -7,7 +7,7 @@
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <title>FoodieMenu</title>
+    <title>🍜 FoodieMenu</title>
 
     <!-- BOOTSTRAP 5 -->
 
@@ -56,6 +56,7 @@
         </button>
 
         <div class="collapse navbar-collapse" id="navbarNav">
+          <!-- điều hướng -->
           <ul class="navbar-nav mx-auto gap-3">
             <li class="nav-item">
               <a class="nav-link" href="#home"> Trang chủ </a>
@@ -74,19 +75,189 @@
             </li>
           </ul>
 
-          <!-- SEARCH -->
+          <!-- RIGHT -->
 
-          <div class="d-flex">
-            <input
-              class="form-control"
-              type="text"
-              id="searchInput"
-              placeholder="Tìm món ăn..."
-            />
+          <div class="d-flex align-items-center gap-3">
+            <!-- SEARCH -->
+
+            <div class="search-wrapper">
+              <!-- ICON -->
+
+              <i
+                class="fa-solid fa-magnifying-glass nav-icon"
+                onclick="toggleSearch()"
+              ></i>
+
+              <!-- INPUT -->
+
+              <input
+                type="text"
+                id="searchInput"
+                class="search-input"
+                placeholder="Tìm món ăn..."
+              />
+            </div>
+
+            <!-- CART -->
+
+            <div class="cart-wrapper" onclick="showCart()">
+              <i class="fa-solid fa-cart-shopping nav-icon"></i>
+
+              <span id="cart-count" class="cart-count">0</span>
+            </div>
+
+            <!-- USER DROPDOWN -->
+
+            <div class="dropdown">
+              <button
+                class="btn user-btn dropdown-toggle"
+                type="button"
+                data-bs-toggle="dropdown"
+              >
+                <i class="fa-solid fa-user"></i>
+              </button>
+
+              <ul class="dropdown-menu dropdown-menu-end shadow border-0">
+                <li>
+                  <a
+                    class="dropdown-item"
+                    href="#"
+                    data-bs-toggle="modal"
+                    data-bs-target="#loginModal"
+                  >
+                    <i class="fa-solid fa-right-to-bracket me-2"></i>
+
+                    Đăng nhập
+                  </a>
+                </li>
+
+                <li>
+                  <a class="dropdown-item" href="admin.html">
+                    <i class="fa-solid fa-user-shield me-2"></i>
+
+                    Quản trị
+                  </a>
+                </li>
+
+                <li>
+                  <hr class="dropdown-divider" />
+                </li>
+
+                <li>
+                  <a
+                    class="dropdown-item text-danger"
+                    href="#"
+                    onclick="logout()"
+                  >
+                    <i class="fa-solid fa-right-from-bracket me-2"></i>
+
+                    Đăng xuất
+                  </a>
+                </li>
+              </ul>
+            </div>
           </div>
         </div>
       </div>
     </nav>
+
+    <!-- LOGIN MODAL -->
+
+    <div class="modal fade" id="loginModal">
+      <div class="modal-dialog">
+        <div class="modal-content rounded-4 border-0 shadow">
+          <div class="modal-header border-0">
+            <h5 class="modal-title fw-bold" id="modalTitle">Đăng nhập</h5>
+
+            <button class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+
+          <div class="modal-body">
+            <!-- LOGIN -->
+
+            <form id="loginForm">
+              <div class="mb-3">
+                <label class="form-label"> Username </label>
+
+                <input type="text" id="loginUsername" class="form-control" />
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label"> Password </label>
+
+                <input
+                  type="password"
+                  id="loginPassword"
+                  class="form-control"
+                />
+              </div>
+
+              <button class="btn btn-success w-100 rounded-pill">
+                Đăng nhập
+              </button>
+
+              <p class="text-center mt-3">
+                Chưa có tài khoản?
+
+                <span
+                  class="text-success fw-bold switch-form"
+                  onclick="showRegister()"
+                >
+                  Đăng ký ngay
+                </span>
+              </p>
+            </form>
+
+            <!-- REGISTER -->
+
+            <form id="registerForm" class="d-none">
+              <div class="mb-3">
+                <label class="form-label"> Username </label>
+
+                <input type="text" id="registerUsername" class="form-control" />
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label"> Password </label>
+
+                <input
+                  type="password"
+                  id="registerPassword"
+                  class="form-control"
+                />
+              </div>
+
+              <!-- NHẬP LẠI PASSWORD -->
+
+              <div class="mb-3">
+                <label class="form-label"> Nhập lại Password </label>
+
+                <input
+                  type="password"
+                  id="confirmPassword"
+                  class="form-control"
+                />
+              </div>
+
+              <button class="btn btn-success w-100 rounded-pill">
+                Đăng ký
+              </button>
+
+              <p class="text-center mt-3">
+                Đã có tài khoản?
+
+                <span
+                  class="text-success fw-bold switch-form"
+                  onclick="showLogin()"
+                >
+                  Đăng nhập
+                </span>
+              </p>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <!-- HERO -->
     <!-- Khu vực giới thiệu chính: tiêu đề lớn, mô tả và nút hành động -->
@@ -171,7 +342,91 @@
 
     <!-- MODAL -->
     <!-- Hộp thoại mở ra để hiển thị chi tiết món ăn khi người dùng nhấp vào một món -->
-    <div class="modal fade" id="foodModal" tabindex="-1">
+   <!-- FOOD MODAL -->
+
+<div class="modal fade" id="foodModal" tabindex="-1">
+
+  <div class="modal-dialog modal-lg">
+
+    <div class="modal-content">
+
+      <div class="modal-header">
+
+        <h5 class="modal-title">
+          Chi tiết món ăn
+        </h5>
+
+        <button
+          class="btn-close"
+          data-bs-dismiss="modal"
+        ></button>
+
+      </div>
+
+      <div
+        class="modal-body"
+        id="modal-body"
+      ></div>
+
+    </div>
+
+  </div>
+
+</div>
+
+<!-- CART MODAL -->
+
+<div class="modal fade" id="cartModal" tabindex="-1">
+
+  <div class="modal-dialog modal-lg">
+
+    <div class="modal-content">
+
+      <div class="modal-header">
+
+        <h5 class="modal-title">
+          🛒 Giỏ hàng
+        </h5>
+
+        <button
+          class="btn-close"
+          data-bs-dismiss="modal"
+        ></button>
+
+      </div>
+
+      <div
+        class="modal-body"
+        id="cart-body"
+      >
+
+      </div>
+
+      <div class="modal-footer">
+
+        <h5 class="me-auto">
+
+          Tổng:
+          <span id="cart-total">
+            0đ
+          </span>
+
+        </h5>
+
+        <button
+          class="btn btn-success"
+          onclick="checkout()"
+        >
+          Thanh toán
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
       <div class="modal-dialog modal-lg">
         <div class="modal-content">
           <div class="modal-header">
