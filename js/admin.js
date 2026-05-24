@@ -1,3 +1,5 @@
+// admin.js
+
 // ================= BASE =================
 
 const BASE_URL = "https://69fc37aafce564e259177aba.mockapi.io/api/v1";
@@ -26,12 +28,17 @@ const giaEl = document.getElementById("Gia");
 const danhMucEl = document.getElementById("DanhMuc");
 const hinhAnhEl = document.getElementById("HinhAnh");
 const danhGiaEl = document.getElementById("DanhGia");
+const isAvailableEl = document.getElementById("isAvailable");
 const moTaEl = document.getElementById("MoTa");
 
 const errTenMon = document.getElementById("errTenMon");
 const errGia = document.getElementById("errGia");
 const errDanhMuc = document.getElementById("errDanhMuc");
 const errHinhAnh = document.getElementById("errHinhAnh");
+
+const statTotalEl = document.getElementById("stat-total");
+const statAvailableEl = document.getElementById("stat-available");
+const statEmptyEl = document.getElementById("stat-empty");
 
 // ================= UTIL =================
 
@@ -103,10 +110,12 @@ function resetForm() {
   editId = null;
   foodForm.reset();
   modalTitle.innerText = "Thêm món ăn";
+  isAvailableEl.checked = true;
   clearErrors();
 }
 
 // ================= FETCH FOODS =================
+
 function getFoods() {
   showLoading();
   setFetchError("");
@@ -158,9 +167,13 @@ function getCategories() {
 function renderFoods(data) {
   let html = "";
   let i = 0;
+  let countAvailable = 0;
 
   while (i < data.length) {
     const food = data[i];
+    const isAvailable = food.isAvailable !== false;
+    if (isAvailable) countAvailable++;
+
     html += `
       <tr>
         <td>${i + 1}</td>
@@ -182,6 +195,13 @@ function renderFoods(data) {
           <span class="badge bg-success">${food.DanhMuc}</span>
         </td>
         <td>${formatPrice(food.Gia)}</td>
+        <td>
+          ${
+            isAvailable
+              ? '<span class="badge bg-success">Còn món</span>'
+              : '<span class="badge bg-danger">Hết món</span>'
+          }
+        </td>
         <td>⭐ ${food.DanhGia || 0}</td>
         <td>
           <button type="button" class="btn btn-warning btn-sm btn-edit" data-id="${food.id}">
@@ -197,10 +217,12 @@ function renderFoods(data) {
   }
 
   if (html === "") {
-    html = `<tr><td colspan="7" class="text-center">Không có món ăn phù hợp</td></tr>`;
+    html = `<tr><td colspan="8" class="text-center">Không có món ăn phù hợp</td></tr>`;
   }
-
   foodTable.innerHTML = html;
+  statTotalEl.innerText = data.length;
+  statAvailableEl.innerText = countAvailable;
+  statEmptyEl.innerText = data.length - countAvailable;
 }
 
 // ================= SUBMIT FORM =================
@@ -220,6 +242,7 @@ foodForm.addEventListener("submit", function (event) {
     DanhMuc: danhMucEl.value,
     HinhAnh: hinhAnhEl.value.trim(),
     DanhGia: Number(danhGiaEl.value) || 0,
+    isAvailable: isAvailableEl.checked,
     MoTa: moTaEl.value.trim(),
   };
 
@@ -293,6 +316,7 @@ function handleEdit(id) {
   danhMucEl.value = food.DanhMuc || "";
   hinhAnhEl.value = food.HinhAnh || "";
   danhGiaEl.value = food.DanhGia || "";
+  isAvailableEl.checked = food.isAvailable !== false;
   moTaEl.value = food.MoTa || "";
   clearErrors();
   setFormMessage("", true);

@@ -185,7 +185,6 @@ body {
 /* =========================
    FOOTER
 ========================= */
-
 /* ===== FOOTER ===== */
 
 .footer-section {
@@ -376,6 +375,48 @@ body {
 
 .wrapper {
   display: flex;
+}
+
+/* =========================
+   UI ENHANCEMENTS
+========================= */
+
+.food-card {
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.food-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 15px 30px rgba(25, 135, 84, 0.15) !important;
+}
+
+.food-card img {
+  transition: transform 0.5s ease;
+}
+
+.food-card:hover img {
+  transform: scale(1.05);
+}
+
+.btn-success {
+  background: #198754;
+  border: none;
+  box-shadow: 0 4px 12px rgba(25, 135, 84, 0.2);
+}
+
+#modal-body img {
+  width: 100%;
+  max-height: 400px;
+  object-fit: cover;
+  border-radius: 15px;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.badge {
+  padding: 6px 12px;
+  border-radius: 8px;
+font-weight: 500;
 }
 
 /* =========================
@@ -634,8 +675,7 @@ footer {
 
 .dropdown-item {
   border-radius: 10px;
-
-  padding: 10px 14px;
+padding: 10px 14px;
 
   transition: 0.3s;
 }

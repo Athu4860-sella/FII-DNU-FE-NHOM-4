@@ -119,7 +119,32 @@
         <div class="text-center my-4" id="loading">
           <div class="spinner-border text-success"></div>
         </div>
-
+        <div class="row mb-4 g-3">
+          <div class="col-md-4">
+            <div
+              class="card bg-success text-white p-3 border-0 rounded-4 shadow-sm"
+            >
+              <h6>Tổng số món</h6>
+              <h2 id="stat-total">0</h2>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div
+class="card bg-warning text-dark p-3 border-0 rounded-4 shadow-sm"
+            >
+              <h6>Đang phục vụ</h6>
+              <h2 id="stat-available">0</h2>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div
+              class="card bg-danger text-white p-3 border-0 rounded-4 shadow-sm"
+            >
+              <h6>Đã hết món</h6>
+              <h2 id="stat-empty">0</h2>
+            </div>
+          </div>
+        </div>
         <!-- TABLE -->
 
         <div class="table-responsive">
@@ -136,8 +161,11 @@
 
                 <th>Giá</th>
 
+                <th>Trạng thái</th>
+
                 <th>Đánh giá</th>
-<th>Thao tác</th>
+
+                <th>Thao tác</th>
               </tr>
             </thead>
 
@@ -211,7 +239,7 @@
 
                 <input
                   type="text"
-                  id="HinhAnh"
+id="HinhAnh"
                   class="form-control"
                   placeholder="Dán link ảnh"
                 />
@@ -234,6 +262,18 @@
                 />
               </div>
 
+              <div class="form-check form-switch mb-3">
+                <input
+                  class="form-check-input"
+                  type="checkbox"
+                  id="isAvailable"
+                  checked
+                />
+                <label class="form-check-label" for="isAvailable">
+                  Còn phục vụ (Bật/Tắt trạng thái)
+                </label>
+              </div>
+
               <!-- MÔ TẢ -->
 
               <div class="mb-3">
@@ -243,7 +283,7 @@
                   id="MoTa"
                   class="form-control"
                   rows="4"
-placeholder="Nhập mô tả món ăn"
+                  placeholder="Nhập mô tả món ăn"
                 ></textarea>
               </div>
 
