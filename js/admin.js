@@ -42,10 +42,6 @@ const statEmptyEl = document.getElementById("stat-empty");
 
 // ================= UTIL =================
 
-function formatPrice(price) {
-  return Number(price).toLocaleString("vi-VN") + "đ";
-}
-
 function showLoading() {
   loadingEl.style.display = "block";
 }
@@ -83,12 +79,12 @@ function validateForm() {
 
   let isValid = true;
 
-  if (tenMon === "") {
+  if (isEmpty(tenMon)) {
     errTenMon.innerText = "Tên không được trống";
     isValid = false;
   }
 
-  if (!(gia > 0)) {
+  if (!isValidPrice(gia)) {
     errGia.innerText = "Giá phải > 0";
     isValid = false;
   }
@@ -122,9 +118,7 @@ function getFoods() {
 
   fetch(dishesAPI)
     .then((response) => {
-      if (!response.ok) {
-        throw new Error("Network error");
-      }
+      if (!response.ok) throw new Error("Network error");
       return response.json();
     })
     .then((data) => {
@@ -143,9 +137,7 @@ function getFoods() {
 function getCategories() {
   fetch(categoriesAPI)
     .then((response) => {
-      if (!response.ok) {
-        throw new Error("Network error");
-      }
+      if (!response.ok) throw new Error("Network error");
       return response.json();
     })
     .then((data) => {
@@ -178,22 +170,16 @@ function renderFoods(data) {
       <tr>
         <td>${i + 1}</td>
         <td>
-          <img
-            src="${food.HinhAnh || "https://via.placeholder.com/70"}"
-            width="70"
-            height="70"
-            style="object-fit: cover; border-radius: 10px;"
-            onerror="this.src='https://via.placeholder.com/70'"
-          />
+          <img src="${food.HinhAnh || "https://via.placeholder.com/70"}"
+            width="70" height="70"
+            style="object-fit:cover; border-radius:10px;"
+            onerror="this.src='https://via.placeholder.com/70'" />
         </td>
         <td>
-          <strong>${food.TenMon}</strong>
-          <br />
-          <small>${food.MoTa || ""}</small>
+          <strong>${food.TenMon}</strong><br />
+          <small>${truncateText(food.MoTa || "", 60)}</small>
         </td>
-        <td>
-          <span class="badge bg-success">${food.DanhMuc}</span>
-        </td>
+        <td><span class="badge bg-success">${food.DanhMuc}</span></td>
         <td>${formatPrice(food.Gia)}</td>
         <td>
           ${
@@ -202,7 +188,7 @@ function renderFoods(data) {
               : '<span class="badge bg-danger">Hết món</span>'
           }
         </td>
-        <td>⭐ ${food.DanhGia || 0}</td>
+        <td>${renderStars(Math.round(food.DanhGia))} ${food.DanhGia || 0}</td>
         <td>
           <button type="button" class="btn btn-warning btn-sm btn-edit" data-id="${food.id}">
             <i class="fa-solid fa-pen"></i>
@@ -219,6 +205,7 @@ function renderFoods(data) {
   if (html === "") {
     html = `<tr><td colspan="8" class="text-center">Không có món ăn phù hợp</td></tr>`;
   }
+
   foodTable.innerHTML = html;
   statTotalEl.innerText = data.length;
   statAvailableEl.innerText = countAvailable;
@@ -253,15 +240,11 @@ foodForm.addEventListener("submit", function (event) {
 
   fetch(requestUrl, {
     method: requestMethod,
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify(foodData),
   })
     .then((response) => {
-      if (!response.ok) {
-        throw new Error("Network error");
-      }
+      if (!response.ok) throw new Error("Network error");
       return response.json();
     })
     .then(() => {
@@ -287,19 +270,14 @@ if (addButton) {
   });
 }
 
-// ================= EDIT / DELETE HANDLER =================
+// ================= EDIT / DELETE =================
 
 foodTable.addEventListener("click", function (event) {
   const editButton = event.target.closest(".btn-edit");
   const deleteButton = event.target.closest(".btn-delete");
 
-  if (editButton) {
-    handleEdit(editButton.dataset.id);
-  }
-
-  if (deleteButton) {
-    handleDelete(deleteButton.dataset.id);
-  }
+  if (editButton) handleEdit(editButton.dataset.id);
+  if (deleteButton) handleDelete(deleteButton.dataset.id);
 });
 
 function handleEdit(id) {
@@ -325,17 +303,11 @@ function handleEdit(id) {
 
 function handleDelete(id) {
   const confirmed = window.confirm("Bạn có chắc muốn xóa món ăn này?");
-  if (!confirmed) {
-    return;
-  }
+  if (!confirmed) return;
 
-  fetch(`${dishesAPI}/${id}`, {
-    method: "DELETE",
-  })
+  fetch(`${dishesAPI}/${id}`, { method: "DELETE" })
     .then((response) => {
-      if (!response.ok) {
-        throw new Error("Network error");
-      }
+      if (!response.ok) throw new Error("Network error");
       return response.json();
     })
     .then(() => {
@@ -356,14 +328,15 @@ searchInput.addEventListener("input", function () {
   renderFoods(filtered);
 });
 
+// ================= LOGOUT =================
+
+function logout() {
+  localStorage.removeItem("isLogin");
+  window.location.href = "index.html";
+}
+
 // ================= INIT =================
 
 hideLoading();
 getFoods();
-getCategories();
-
-// ================= INIT =================
-
-getFoods();
-
 getCategories();

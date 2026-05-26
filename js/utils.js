@@ -30,7 +30,6 @@ function isValidPrice(price) {
 
 function renderStars(rating) {
   let stars = "";
-
   for (let i = 1; i <= 5; i++) {
     if (i <= rating) {
       stars += `<i class="fa-solid fa-star text-warning"></i>`;
@@ -38,7 +37,6 @@ function renderStars(rating) {
       stars += `<i class="fa-regular fa-star text-warning"></i>`;
     }
   }
-
   return stars;
 }
 
@@ -50,22 +48,13 @@ function truncateText(text, maxLength = 80) {
   if (text.length > maxLength) {
     return text.substring(0, maxLength) + "...";
   }
-
   return text;
 }
 
 /* =========================
-   RANDOM ID
+   THÔNG BÁO (dùng SweetAlert2)
 ========================= */
 
-function generateId() {
-  return Math.floor(Math.random() * 100000);
-}
-
-/* =========================
-   THÔNG BÁO
-========================= */
-
-function showMessage(message) {
-  alert(message);
+function showMessage(message, type = "info") {
+  Swal.fire({ text: message, icon: type, confirmButtonColor: "#198754" });
 }

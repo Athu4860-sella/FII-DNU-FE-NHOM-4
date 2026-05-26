@@ -1,157 +1,76 @@
-<!-- index.html -->
-
 <!doctype html>
 <html lang="vi">
   <head>
     <meta charset="UTF-8" />
-
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>🍜 FoodieMenu - Tinh hoa ẩm thực Việt</title>
 
-    <title>🍜 FoodieMenu</title>
-
-    <!-- BOOTSTRAP 5 -->
-
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-    />
-
-    <!-- FONT AWESOME -->
-
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
-    />
-
-    <!-- GOOGLE FONT -->
-
-    <link
-      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
-
-    <!-- CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <link rel="stylesheet" href="./css/style.css" />
   </head>
 
   <body>
     <!-- NAVBAR -->
-    <!-- Thanh điều hướng trên cùng của trang: logo, menu và ô tìm kiếm -->
-    <nav
-      class="navbar navbar-expand-lg navbar-light bg-white shadow-sm sticky-top"
-    >
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm sticky-top">
       <div class="container">
-        <a class="navbar-brand fw-bold fs-3 text-success" href="#home">
-          🍜 FoodieMenu
-        </a>
+        <a class="navbar-brand fw-bold fs-3 text-success" href="#home">🍜 FoodieMenu</a>
 
-        <button
-          class="navbar-toggler"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#navbarNav"
-        >
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
           <span class="navbar-toggler-icon"></span>
         </button>
 
         <div class="collapse navbar-collapse" id="navbarNav">
-          <!-- điều hướng -->
           <ul class="navbar-nav mx-auto gap-3">
-            <li class="nav-item">
-              <a class="nav-link" href="#home"> Trang chủ </a>
-            </li>
-
-            <li class="nav-item">
-              <a class="nav-link" href="#menu"> Thực đơn </a>
-            </li>
-
-            <li class="nav-item">
-              <a class="nav-link" href="#categories"> Danh mục </a>
-            </li>
-
-            <li class="nav-item">
-              <a class="nav-link" href="#contact"> Liên hệ </a>
-            </li>
+            <li class="nav-item"><a class="nav-link" href="#home">Trang chủ</a></li>
+            <li class="nav-item"><a class="nav-link" href="#menu">Thực đơn</a></li>
+            <li class="nav-item"><a class="nav-link" href="#categories">Danh mục</a></li>
+            <li class="nav-item"><a class="nav-link" href="#contact">Liên hệ</a></li>
           </ul>
 
-          <!-- RIGHT -->
-
           <div class="d-flex align-items-center gap-3">
-            <!-- SEARCH -->
+            <button class="btn btn-outline-secondary rounded-circle border-0" onclick="toggleDarkMode()">
+              <i class="fa-solid fa-moon" id="dark-icon"></i>
+            </button>
 
             <div class="search-wrapper">
-              <!-- ICON -->
-
-              <i
-                class="fa-solid fa-magnifying-glass nav-icon"
-                onclick="toggleSearch()"
-              ></i>
-
-              <!-- INPUT -->
-
-              <input
-                type="text"
-                id="searchInput"
-                class="search-input"
-                placeholder="Tìm món ăn..."
-              />
+              <i class="fa-solid fa-magnifying-glass nav-icon" onclick="toggleSearch()"></i>
+              <input type="text" id="searchInput" class="search-input" placeholder="Tìm món ăn..." />
             </div>
-
-            <!-- CART -->
 
             <div class="cart-wrapper" onclick="showCart()">
               <i class="fa-solid fa-cart-shopping nav-icon"></i>
-
               <span id="cart-count" class="cart-count">0</span>
             </div>
 
-            <!-- USER DROPDOWN -->
-
             <div class="dropdown">
-              <button
-                class="btn user-btn dropdown-toggle"
-type="button"
-                data-bs-toggle="dropdown"
-              >
+              <button class="btn user-btn dropdown-toggle" type="button" data-bs-toggle="dropdown">
                 <i class="fa-solid fa-user"></i>
               </button>
-
               <ul class="dropdown-menu dropdown-menu-end shadow border-0">
                 <li>
-                  <a
-                    class="dropdown-item"
-                    href="#"
-                    data-bs-toggle="modal"
-                    data-bs-target="#loginModal"
-                  >
-                    <i class="fa-solid fa-right-to-bracket me-2"></i>
-
-                    Đăng nhập
+                  <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#loginModal">
+                    <i class="fa-solid fa-right-to-bracket me-2"></i> Đăng nhập
                   </a>
                 </li>
-
                 <li>
-                  <a class="dropdown-item" href="admin.html">
-                    <i class="fa-solid fa-user-shield me-2"></i>
-
-                    Quản trị
+                  <a class="dropdown-item" href="#" onclick="showOrderHistory()">
+                    <i class="fa-solid fa-clock-rotate-left me-2"></i> Lịch sử đơn
                   </a>
                 </li>
-
                 <li>
-                  <hr class="dropdown-divider" />
+                  <a class="dropdown-item" href="./admin.html">
+                    <i class="fa-solid fa-user-shield me-2"></i> Quản trị
+                  </a>
                 </li>
-
+                <li><hr class="dropdown-divider" /></li>
                 <li>
-                  <a
-                    class="dropdown-item text-danger"
-                    href="#"
-                    onclick="logout()"
-                  >
-                    <i class="fa-solid fa-right-from-bracket me-2"></i>
-
-                    Đăng xuất
+                  <a class="dropdown-item text-danger" href="#" onclick="logout()">
+                    <i class="fa-solid fa-right-from-bracket me-2"></i> Đăng xuất
                   </a>
                 </li>
               </ul>
@@ -162,95 +81,46 @@ type="button"
     </nav>
 
     <!-- LOGIN MODAL -->
-
     <div class="modal fade" id="loginModal">
       <div class="modal-dialog">
         <div class="modal-content rounded-4 border-0 shadow">
           <div class="modal-header border-0">
             <h5 class="modal-title fw-bold" id="modalTitle">Đăng nhập</h5>
-
             <button class="btn-close" data-bs-dismiss="modal"></button>
           </div>
-
           <div class="modal-body">
-            <!-- LOGIN -->
-
             <form id="loginForm">
               <div class="mb-3">
-                <label class="form-label"> Username </label>
-
+                <label class="form-label">Username</label>
                 <input type="text" id="loginUsername" class="form-control" />
               </div>
-
               <div class="mb-3">
-                <label class="form-label"> Password </label>
-
-                <input
-                  type="password"
-                  id="loginPassword"
-                  class="form-control"
-                />
+                <label class="form-label">Password</label>
+                <input type="password" id="loginPassword" class="form-control" />
               </div>
-
-              <button class="btn btn-success w-100 rounded-pill">
-                Đăng nhập
-              </button>
-
+              <button class="btn btn-success w-100 rounded-pill">Đăng nhập</button>
               <p class="text-center mt-3">
                 Chưa có tài khoản?
-
-                <span
-                  class="text-success fw-bold switch-form"
-                  onclick="showRegister()"
-                >
-                  Đăng ký ngay
-                </span>
+                <span class="text-success fw-bold switch-form" onclick="showRegister()">Đăng ký ngay</span>
               </p>
             </form>
-
-            <!-- REGISTER -->
-
             <form id="registerForm" class="d-none">
               <div class="mb-3">
-                <label class="form-label"> Username </label>
-<input type="text" id="registerUsername" class="form-control" />
+                <label class="form-label">Username</label>
+                <input type="text" id="registerUsername" class="form-control" />
               </div>
-
               <div class="mb-3">
-                <label class="form-label"> Password </label>
-
-                <input
-                  type="password"
-                  id="registerPassword"
-                  class="form-control"
-                />
+                <label class="form-label">Password</label>
+                <input type="password" id="registerPassword" class="form-control" />
               </div>
-
-              <!-- NHẬP LẠI PASSWORD -->
-
               <div class="mb-3">
-                <label class="form-label"> Nhập lại Password </label>
-
-                <input
-                  type="password"
-                  id="confirmPassword"
-                  class="form-control"
-                />
+                <label class="form-label">Nhập lại Password</label>
+                <input type="password" id="confirmPassword" class="form-control" />
               </div>
-
-              <button class="btn btn-success w-100 rounded-pill">
-                Đăng ký
-              </button>
-
+              <button class="btn btn-success w-100 rounded-pill">Đăng ký</button>
               <p class="text-center mt-3">
                 Đã có tài khoản?
-
-                <span
-                  class="text-success fw-bold switch-form"
-                  onclick="showLogin()"
-                >
-                  Đăng nhập
-                </span>
+                <span class="text-success fw-bold switch-form" onclick="showLogin()">Đăng nhập</span>
               </p>
             </form>
           </div>
@@ -259,54 +129,37 @@ type="button"
     </div>
 
     <!-- HERO -->
-    <!-- Khu vực giới thiệu chính: tiêu đề lớn, mô tả và nút hành động -->
     <section id="home" class="hero d-flex align-items-center">
-      <div class="container text-white">
+      <div class="container text-white" data-aos="fade-up">
         <h1 class="display-3 fw-bold mb-4">Tinh hoa ẩm thực Việt Nam</h1>
-
         <p class="fs-4 mb-4">Phở • Bún • Cơm Tấm • Cơm Thố • Lẩu</p>
       </div>
     </section>
 
     <!-- MAIN -->
-
     <div class="container my-5">
       <div class="row">
-        <!-- LEFT -->
-        <!-- Cột trái chứa danh mục và danh sách món ăn nổi bật -->
         <div class="col-lg-9">
-          <!-- CATEGORY -->
-          <!-- Phần danh mục món ăn: các mục sẽ được chèn vào #categories-list bằng JavaScript -->
-          <div
-            id="categories"
-            class="d-flex justify-content-between align-items-center mb-4"
-          >
+          <div id="categories" class="d-flex justify-content-between align-items-center mb-4">
             <h2 class="fw-bold">Danh mục món ăn</h2>
           </div>
+          <div class="row g-4 mb-5" id="categories-list" data-aos="fade-right"></div>
 
-          <div class="row g-4 mb-5" id="categories-list"></div>
-
-          <!-- FOOD -->
-          <!-- Phần menu món ăn nổi bật: danh sách món sẽ được chèn vào #menu-list -->
-          <div
-            id="menu"
-            class="d-flex justify-content-between align-items-center mb-4"
-          >
+          <div id="menu" class="d-flex justify-content-between align-items-center mb-4">
             <h2 class="fw-bold">🔥 Món ăn nổi bật</h2>
           </div>
 
-          <!-- LOADING -->
-          <!-- Hiển thị biểu tượng xoay khi trang đang chờ tải dữ liệu món ăn -->
           <div class="text-center my-5" id="loading">
             <div class="spinner-border text-success"></div>
           </div>
 
-          <div class="row mb-4 align-items-center">
+          <!-- FILTER & SORT -->
+          <div class="row mb-4 align-items-center" data-aos="fade-up">
             <div class="col-md-6">
               <div class="btn-group" role="group">
-<button class="btn btn-outline-success active" onclick="filterPrice('all')">Tất cả giá</button>
-                <button class="btn btn-outline-success" onclick="filterPrice('low')">< 100k</button>
-                <button class="btn btn-outline-success" onclick="filterPrice('high')">> 100k</button>
+                <button class="btn btn-outline-success active" onclick="filterPrice('all')">Tất cả giá</button>
+                <button class="btn btn-outline-success" onclick="filterPrice('low')">&lt; 100k</button>
+                <button class="btn btn-outline-success" onclick="filterPrice('high')">&gt; 100k</button>
               </div>
             </div>
             <div class="col-md-6 text-md-end mt-3 mt-md-0">
@@ -322,33 +175,19 @@ type="button"
         </div>
 
         <!-- RIGHT -->
-        <!-- Cột phải chứa thông tin giới thiệu, giờ mở cửa và liên hệ -->
         <div class="col-lg-3">
-          <div class="bg-white shadow rounded-4 p-4 info-box">
+          <div class="bg-white shadow rounded-4 p-4 info-box" data-aos="fade-left">
             <h3 class="fw-bold text-success mb-3">FoodieMenu</h3>
-
-            <p>
-              Chuyên phục vụ món ăn Việt Nam truyền thống với nguyên liệu tươi
-              ngon mỗi ngày.
-            </p>
-
+            <p>Chuyên phục vụ món ăn Việt Nam truyền thống với nguyên liệu tươi ngon mỗi ngày.</p>
             <hr />
-
             <h5 class="fw-bold">🕒 Giờ mở cửa</h5>
-
             <p>06:00 - 22:00</p>
-
             <h5 class="fw-bold">☎ Hotline</h5>
-
             <p>1900 1234</p>
-
             <h5 class="fw-bold">⭐ Món nổi bật</h5>
-
             <ul>
               <li>Phở bò đặc biệt</li>
-
               <li>Lẩu thái hải sản</li>
-
               <li>Cơm tấm sườn bì</li>
             </ul>
           </div>
@@ -356,188 +195,133 @@ type="button"
       </div>
     </div>
 
-    <!-- MODAL -->
-    <!-- Hộp thoại mở ra để hiển thị chi tiết món ăn khi người dùng nhấp vào một món -->
-   <!-- FOOD MODAL -->
-
-<div class="modal fade" id="foodModal" tabindex="-1">
-
-  <div class="modal-dialog modal-lg">
-
-    <div class="modal-content">
-
-    
-
-      <div
-        class="modal-body"
-        id="modal-body"
-      ></div>
-
-    </div>
-
-  </div>
-
-</div>
-
-<!-- CART MODAL -->
-
-<div class="modal fade" id="cartModal" tabindex="-1">
-
-  <div class="modal-dialog modal-lg">
-
-    <div class="modal-content">
-
-      <div class="modal-header">
-
-        <h5 class="modal-title">
-          🛒 Giỏ hàng
-        </h5>
-
-        <button
-          class="btn-close"
-          data-bs-dismiss="modal"
-        ></button>
-
-      </div>
-
-      <div
-        class="modal-body"
-        id="cart-body"
-      >
-
-      </div>
-
-      <div class="modal-footer">
-
-        <h5 class="me-auto">
-
-          Tổng:
-          <span id="cart-total">
-            0đ
-          </span>
-
-        </h5>
-
-        <button
-          class="btn btn-success"
-          onclick="checkout()"
-        >
-          Thanh toán
-        </button>
-
-      </div>
-
-    </div>
-
-  </div>
-
-</div>
+    <!-- FOOD DETAIL MODAL -->
+    <div class="modal fade" id="foodModal" tabindex="-1">
       <div class="modal-dialog modal-lg">
-<div class="modal-content">
-          <!-- <div class="modal-header">
-            <h5 class="modal-title">Chi tiết món ăn</h5>
-
-            <button class="btn-close" data-bs-dismiss="modal"></button>
-          </div> -->
-
+        <div class="modal-content border-0 rounded-4">
           <div class="modal-body" id="modal-body"></div>
         </div>
       </div>
     </div>
 
-    <!-- FOOTER -->
-    <!-- Chân trang chứa thông tin cửa hàng và thông tin liên hệ -->
-    <!-- Footer -->
-    <!-- Footer -->
-    <footer id="contact" class="footer-section text-white pt-5">
-      <div class="container">
-        <div class="row gy-5 align-items-start">
-          <!-- Left -->
-          <div class="col-lg-6">
-            <h2 class="footer-logo mb-3">🍜 FoodieMenu</h2>
-
-            <p class="footer-text">
-              Mang tinh hoa ẩm thực Việt đến mọi nhà. Thưởng thức hàng trăm món
-              ăn hấp dẫn mỗi ngày với trải nghiệm hiện đại và chuyên nghiệp.
-            </p>
-
-            <!-- Button -->
-            <a href="#menu" class="btn footer-btn mt-3"> Khám phá menu </a>
+    <!-- CART MODAL -->
+    <div class="modal fade" id="cartModal" tabindex="-1">
+      <div class="modal-dialog modal-xl">
+        <div class="modal-content border-0 shadow">
+          <div class="modal-header bg-success text-white">
+            <h5 class="modal-title fw-bold">🛒 Giỏ hàng của bạn</h5>
+            <button class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
           </div>
+          <div class="modal-body">
+            <div class="row">
+              <div class="col-lg-7 border-end">
+                <div id="cart-body" style="max-height: 400px; overflow-y: auto"></div>
+                <button class="btn btn-outline-danger btn-sm mt-3" onclick="clearCart()">
+                  <i class="fa-solid fa-trash me-1"></i> Xóa toàn bộ
+                </button>
+              </div>
+              <div class="col-lg-5">
+                <h5 class="fw-bold mb-3">Thông tin thanh toán</h5>
+                <input type="text" id="cus-name" class="form-control mb-2" placeholder="Họ tên" />
+                <input type="text" id="cus-phone" class="form-control mb-2" placeholder="Số điện thoại" />
+                <input type="text" id="cus-address" class="form-control mb-3" placeholder="Địa chỉ" />
 
-          <!-- Right -->
-          <div class="col-lg-6">
-            <h3 class="footer-title mb-4">📍 Liên hệ</h3>
-
-            <div class="footer-contact">
-              <p>
-                <i class="fa-solid fa-phone footer-icon"></i>
-                Hotline: 1900 1234
-              </p>
-
-              <p>
-                <i class="fa-solid fa-envelope footer-icon"></i>
-                foodiemenu@gmail.com
-              </p>
-
-              <p>
-                <i class="fa-solid fa-location-dot footer-icon"></i>
-                Hà Nội, Việt Nam
-              </p>
-            </div>
-
-            <!-- Social -->
-            <div class="social-icons mt-4">
-              <a href="#">
-                <i class="fa-brands fa-facebook-f"></i>
-              </a>
-
-              <a href="#">
-                <i class="fa-brands fa-instagram"></i>
-              </a>
-
-              <a href="#">
-                <i class="fa-brands fa-tiktok"></i>
-              </a>
-
-              <a href="#">
-                <i class="fa-brands fa-youtube"></i>
-              </a>
+                <div class="bg-light p-3 rounded-3">
+                  <div class="d-flex justify-content-between mb-1">
+                    <span>Tạm tính:</span> <span id="cart-subtotal">0đ</span>
+                  </div>
+                  <div class="d-flex justify-content-between mb-1">
+                    <span>Phí ship:</span> <span>20.000đ</span>
+                  </div>
+                  <hr />
+                  <div class="d-flex justify-content-between fw-bold fs-4 text-success">
+                    <span>Tổng cộng:</span> <span id="cart-total">0đ</span>
+                  </div>
+                </div>
+                <button class="btn btn-success w-100 btn-lg mt-3 rounded-pill" onclick="checkout()">
+                  THANH TOÁN NGAY
+                </button>
+              </div>
             </div>
           </div>
         </div>
+      </div>
+    </div>
 
-        <!-- Divider -->
+    <!-- MODAL LỊCH SỬ ĐƠN -->
+    <div class="modal fade" id="orderHistoryModal" tabindex="-1">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">📜 Lịch sử mua hàng</h5>
+            <button class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body" id="order-history-body"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer id="contact" class="footer-section text-white pt-5">
+      <div class="container">
+        <div class="row gy-5 align-items-start">
+          <div class="col-lg-6">
+            <h2 class="footer-logo mb-3">🍜 FoodieMenu</h2>
+            <p class="footer-text">
+              Mang tinh hoa ẩm thực Việt đến mọi nhà. Thưởng thức hàng trăm món ăn hấp dẫn mỗi ngày với trải nghiệm hiện đại và chuyên nghiệp.
+            </p>
+            <a href="#menu" class="btn footer-btn mt-3">Khám phá menu</a>
+          </div>
+          <div class="col-lg-6">
+            <h3 class="footer-title mb-4">📍 Liên hệ</h3>
+            <div class="footer-contact">
+              <p><i class="fa-solid fa-phone footer-icon"></i> Hotline: 1900 1234</p>
+              <p><i class="fa-solid fa-envelope footer-icon"></i> foodiemenu@gmail.com</p>
+              <p><i class="fa-solid fa-location-dot footer-icon"></i> Hà Nội, Việt Nam</p>
+            </div>
+            <div class="social-icons mt-4">
+              <a href="#"><i class="fa-brands fa-facebook-f"></i></a>
+              <a href="#"><i class="fa-brands fa-instagram"></i></a>
+              <a href="#"><i class="fa-brands fa-tiktok"></i></a>
+              <a href="#"><i class="fa-brands fa-youtube"></i></a>
+            </div>
+          </div>
+        </div>
         <hr class="footer-line my-5" />
-
-        <!-- Bottom -->
         <div class="row justify-content-center">
           <div class="col-12 text-center">
             <p class="footer-bottom mb-0">© 2026 FoodieMenu</p>
           </div>
-
-          <!-- <div class="col-md-6 text-center text-md-end mt-3 mt-md-0">
-        <p class="footer-bottom mb-0">
-          Designed with Bootstrap 5 💚
-        </p>
-      </div> -->
         </div>
       </div>
     </footer>
 
-    <!-- JQUERY -->
-    <!-- Thư viện jQuery dùng để hỗ trợ thao tác DOM và AJAX nếu cần -->
+    <!-- BACK TO TOP -->
+    <button id="backToTop" class="btn btn-success rounded-circle shadow"
+      style="display:none; position:fixed; bottom:30px; right:30px; z-index:99; width:50px; height:50px;">
+      <i class="fa-solid fa-arrow-up"></i>
+    </button>
+
+    <!-- TOAST -->
+    <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index:1050">
+      <div id="cartToast" class="toast align-items-center text-white bg-success border-0" role="alert">
+        <div class="d-flex">
+          <div class="toast-body">
+            <i class="fa-solid fa-check-circle me-2"></i>
+            <span id="toastMsg">Thêm thành công!</span>
+          </div>
+          <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+        </div>
+      </div>
+    </div>
+
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-
-    <!-- BOOTSTRAP JS -->
-<!-- Bootstrap JavaScript dùng để bật chức năng menu gập và modal -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>AOS.init({ duration: 800, once: true });</script>
 
-    <!-- JS -->
-    <!-- Tập tin JavaScript chứa các hàm tiện ích chung -->
     <script src="./js/utils.js"></script>
-
-    <!-- Tập tin JavaScript của dự án, nơi xử lý dữ liệu và hiển thị món ăn -->
-    <script src="js/api.js"></script>
+    <script src="./js/api.js"></script>
+    <script src="./js/main.js"></script>
   </body>
 </html>
