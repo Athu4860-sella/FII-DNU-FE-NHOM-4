@@ -190,12 +190,14 @@ function renderFoods(data) {
         </td>
         <td>${renderStars(Math.round(food.DanhGia))} ${food.DanhGia || 0}</td>
         <td>
-          <button type="button" class="btn btn-edit-admin btn-edit me-1" data-id="${food.id}">
-            <i class="fa-solid fa-pen me-1"></i>Sửa
-          </button>
-          <button type="button" class="btn btn-delete-admin btn-delete" data-id="${food.id}">
-            <i class="fa-solid fa-trash me-1"></i>Xóa
-          </button>
+          <div class="d-flex gap-2">
+            <button type="button" class="btn btn-edit-admin btn-edit" data-id="${food.id}">
+              <i class="fa-solid fa-pen me-1"></i>Sửa
+            </button>
+            <button type="button" class="btn btn-delete-admin btn-delete" data-id="${food.id}">
+              <i class="fa-solid fa-trash me-1"></i>Xóa
+            </button>
+          </div>
         </td>
       </tr>
     `;
@@ -343,20 +345,18 @@ getCategories();
 
 // ================= SECTION SWITCHING =================
 
+const ALL_SECTIONS = ["foods", "combo", "danh-muc", "thong-ke"];
+
 function showSection(section) {
-  document.getElementById("foods-section").style.display =
-    section === "foods" ? "block" : "none";
-  document.getElementById("combo-section").style.display =
-    section === "combo" ? "block" : "none";
-
-  document
-    .getElementById("nav-foods")
-    .classList.toggle("active", section === "foods");
-  document
-    .getElementById("nav-combo")
-    .classList.toggle("active", section === "combo");
-
+  ALL_SECTIONS.forEach((s) => {
+    const el = document.getElementById(s + "-section");
+    const nav = document.getElementById("nav-" + s);
+    if (el) el.style.display = s === section ? "block" : "none";
+    if (nav) nav.classList.toggle("active", s === section);
+  });
   if (section === "combo") renderComboTable();
+  if (section === "danh-muc") renderCatTable();
+  if (section === "thong-ke") renderThongKe();
 }
 
 // ================= COMBO CRUD =================
@@ -443,12 +443,14 @@ function renderComboTable() {
         <td class="text-success fw-bold">${formatPrice(c.Gia)}</td>
         <td><span class="badge bg-success">${c.tag || ""}</span></td>
         <td>
-          <button class="btn btn-edit-admin me-1" onclick="editCombo('${c.id}')">
-            <i class="fa-solid fa-pen me-1"></i>Sửa
-          </button>
-          <button class="btn btn-delete-admin" onclick="deleteCombo('${c.id}')">
-            <i class="fa-solid fa-trash me-1"></i>Xóa
-          </button>
+          <div class="d-flex gap-2">
+            <button class="btn btn-edit-admin" onclick="editCombo('${c.id}')">
+              <i class="fa-solid fa-pen me-1"></i>Sửa
+            </button>
+            <button class="btn btn-delete-admin" onclick="deleteCombo('${c.id}')">
+              <i class="fa-solid fa-trash me-1"></i>Xóa
+            </button>
+          </div>
         </td>
       </tr>`;
     })
@@ -498,6 +500,220 @@ function deleteCombo(id) {
   saveCombos(combos);
   renderComboTable();
   showMessage("Đã xóa combo!", "success");
+}
+
+// ================= DANH MỤC CRUD =================
+
+let categoriesData = [];
+let editCatId = null;
+const catModalEl = document.getElementById("catModal");
+const catModal = catModalEl ? new bootstrap.Modal(catModalEl) : null;
+const catForm = document.getElementById("catForm");
+
+function renderCatTable() {
+  const tbody = document.getElementById("catTable");
+  if (!tbody) return;
+  tbody.innerHTML = `<tr><td colspan="4" class="text-center py-3"><div class="spinner-border spinner-border-sm text-success"></div></td></tr>`;
+
+  fetch(categoriesAPI)
+    .then((r) => (r.ok ? r.json() : Promise.reject()))
+    .then((data) => {
+      categoriesData = data;
+      const statEl = document.getElementById("stat-cat-total");
+      if (statEl) statEl.textContent = data.length;
+
+      if (!data.length) {
+        tbody.innerHTML = `<tr><td colspan="4" class="text-center text-muted py-4">Chưa có danh mục nào</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = data
+        .map((cat, i) => {
+          const count = foodsData.filter(
+            (f) => f.DanhMuc === cat.TenDanhMuc,
+          ).length;
+          return `
+          <tr>
+            <td>${i + 1}</td>
+            <td><strong>${cat.TenDanhMuc}</strong></td>
+            <td><span class="badge bg-success">${count} món</span></td>
+            <td>
+              <div class="d-flex gap-2">
+                <button class="btn btn-edit-admin" onclick="editCat('${cat.id}')">
+                  <i class="fa-solid fa-pen me-1"></i>Sửa
+                </button>
+                <button class="btn btn-delete-admin" onclick="deleteCat('${cat.id}')">
+                  <i class="fa-solid fa-trash me-1"></i>Xóa
+                </button>
+              </div>
+            </td>
+          </tr>`;
+        })
+        .join("");
+    })
+    .catch(() => {
+      if (tbody)
+        tbody.innerHTML = `<tr><td colspan="4" class="text-center text-danger py-3">Không tải được danh mục</td></tr>`;
+    });
+}
+
+function openCatModal(id = null) {
+  editCatId = id;
+  document.getElementById("catModalTitle").textContent = id
+    ? "Sửa danh mục"
+    : "Thêm danh mục";
+  document.getElementById("err-cat-name").textContent = "";
+  if (id) {
+    const cat = categoriesData.find((c) => c.id === id);
+    if (cat) document.getElementById("cat-name").value = cat.TenDanhMuc;
+  } else {
+    document.getElementById("cat-name").value = "";
+  }
+  catModal && catModal.show();
+}
+
+function editCat(id) {
+  openCatModal(id);
+}
+
+function deleteCat(id) {
+  if (!confirm("Bạn có chắc muốn xóa danh mục này?")) return;
+  fetch(`${categoriesAPI}/${id}`, { method: "DELETE" })
+    .then((r) => (r.ok ? r.json() : Promise.reject()))
+    .then(() => {
+      renderCatTable();
+      getCategories();
+      showMessage("Đã xóa danh mục!", "success");
+    })
+    .catch(() => showMessage("Xóa thất bại!", "error"));
+}
+
+catForm &&
+  catForm.addEventListener("submit", function (e) {
+    e.preventDefault();
+    const name = document.getElementById("cat-name").value.trim();
+    document.getElementById("err-cat-name").textContent = "";
+    if (!name) {
+      document.getElementById("err-cat-name").textContent =
+        "Tên danh mục không được trống";
+      return;
+    }
+    const url = editCatId ? `${categoriesAPI}/${editCatId}` : categoriesAPI;
+    const method = editCatId ? "PUT" : "POST";
+    fetch(url, {
+      method,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ TenDanhMuc: name }),
+    })
+      .then((r) => (r.ok ? r.json() : Promise.reject()))
+      .then(() => {
+        catModal && catModal.hide();
+        renderCatTable();
+        getCategories();
+        showMessage(
+          editCatId
+            ? "Cập nhật danh mục thành công!"
+            : "Thêm danh mục thành công!",
+          "success",
+        );
+        editCatId = null;
+      })
+      .catch(() => showMessage("Lưu thất bại. Vui lòng thử lại!", "error"));
+  });
+
+// ================= THỐNG KÊ =================
+
+function renderThongKe() {
+  const combos = loadCombos();
+  const total = foodsData.length;
+  const available = foodsData.filter((f) => f.isAvailable !== false).length;
+  const unavailable = total - available;
+  const cats = [...new Set(foodsData.map((f) => f.DanhMuc).filter(Boolean))];
+
+  const cards = document.getElementById("tk-stat-cards");
+  if (cards) {
+    cards.innerHTML = `
+      <div class="col-6 col-md-3">
+        <div class="admin-stat-card bg-success text-white shadow-sm">
+          <h6><i class="fa-solid fa-bowl-food me-2"></i>Tổng món ăn</h6>
+          <h2>${total}</h2>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="admin-stat-card bg-warning text-dark shadow-sm">
+          <h6><i class="fa-solid fa-circle-check me-2"></i>Đang phục vụ</h6>
+          <h2>${available}</h2>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="admin-stat-card text-white shadow-sm" style="background:#0d6efd">
+          <h6><i class="fa-solid fa-list me-2"></i>Danh mục</h6>
+          <h2>${cats.length}</h2>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="admin-stat-card bg-danger text-white shadow-sm">
+          <h6><i class="fa-solid fa-gift me-2"></i>Combo ưu đãi</h6>
+          <h2>${combos.length}</h2>
+        </div>
+      </div>`;
+  }
+
+  const catMap = {};
+  foodsData.forEach((f) => {
+    const cat = f.DanhMuc || "Khác";
+    catMap[cat] = (catMap[cat] || 0) + 1;
+  });
+  const sorted = Object.entries(catMap).sort((a, b) => b[1] - a[1]);
+  const maxVal = sorted.length ? sorted[0][1] : 1;
+
+  const chartEl = document.getElementById("tk-category-chart");
+  if (chartEl) {
+    if (!sorted.length) {
+      chartEl.innerHTML = `<p class="text-muted text-center">Chưa có dữ liệu</p>`;
+    } else {
+      chartEl.innerHTML = sorted
+        .map(([name, count]) => {
+          const pct = Math.round((count / maxVal) * 100);
+          return `
+          <div class="mb-3">
+            <div class="d-flex justify-content-between mb-1">
+              <span class="fw-semibold" style="font-size:14px">${name}</span>
+              <span class="text-muted" style="font-size:13px">${count} món</span>
+            </div>
+            <div style="background:#e9ecef;border-radius:8px;height:12px;overflow:hidden">
+              <div style="background:linear-gradient(90deg,#198754,#20c997);height:12px;border-radius:8px;width:${pct}%;transition:width 0.7s ease"></div>
+            </div>
+          </div>`;
+        })
+        .join("");
+    }
+  }
+
+  const comboEl = document.getElementById("tk-combo-list");
+  if (comboEl) {
+    if (!combos.length) {
+      comboEl.innerHTML = `<p class="text-muted text-center py-3">Chưa có combo nào</p>`;
+    } else {
+      comboEl.innerHTML = combos
+        .slice(0, 6)
+        .map((c) => {
+          const disc = Math.round((1 - c.Gia / c.oldPrice) * 100);
+          return `
+          <div class="d-flex align-items-center gap-3 mb-3 p-2 rounded-3" style="background:#f8f9fa">
+            <img src="${c.img}" width="46" height="46"
+              style="border-radius:10px;object-fit:cover;flex-shrink:0"
+              onerror="this.src='https://via.placeholder.com/46'" />
+            <div style="flex:1;min-width:0">
+              <div class="fw-semibold text-truncate" style="font-size:13px">${c.TenMon}</div>
+              <div class="text-success fw-bold" style="font-size:13px">${formatPrice(c.Gia)}</div>
+            </div>
+            <span class="badge bg-danger">-${disc}%</span>
+          </div>`;
+        })
+        .join("");
+    }
+  }
 }
 
 comboForm &&
