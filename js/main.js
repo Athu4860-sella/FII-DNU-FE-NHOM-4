@@ -6,7 +6,67 @@ $(document).ready(function () {
   getCategories();
   getFoods();
   updateCartCount();
+  initSlider();
 });
+
+// ================= SLIDESHOW =================
+
+let currentSlide = 0;
+let sliderInterval = null;
+
+function initSlider() {
+  startSlider();
+
+  const sliderEl = document.querySelector(".hero-slider");
+  if (sliderEl) {
+    sliderEl.addEventListener("mouseenter", () =>
+      clearInterval(sliderInterval),
+    );
+    sliderEl.addEventListener("mouseleave", startSlider);
+  }
+}
+
+function showSlide(index) {
+  const slides = document.querySelectorAll(".slide");
+  const dots = document.querySelectorAll(".dot");
+  if (!slides.length) return;
+
+  slides[currentSlide].classList.remove("active");
+  dots[currentSlide].classList.remove("active");
+
+  currentSlide = (index + slides.length) % slides.length;
+
+  slides[currentSlide].classList.add("active");
+  dots[currentSlide].classList.add("active");
+}
+
+function nextSlide() {
+  showSlide(currentSlide + 1);
+  resetSlider();
+}
+
+function prevSlide() {
+  showSlide(currentSlide - 1);
+  resetSlider();
+}
+
+function goToSlide(index) {
+  showSlide(index);
+  resetSlider();
+}
+
+function startSlider() {
+  sliderInterval = setInterval(() => showSlide(currentSlide + 1), 5000);
+}
+
+function resetSlider() {
+  clearInterval(sliderInterval);
+  startSlider();
+}
+
+window.nextSlide = nextSlide;
+window.prevSlide = prevSlide;
+window.goToSlide = goToSlide;
 
 // ================= SEARCH =================
 

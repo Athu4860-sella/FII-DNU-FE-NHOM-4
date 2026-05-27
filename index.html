@@ -128,11 +128,74 @@
       </div>
     </div>
 
-    <!-- HERO -->
-    <section id="home" class="hero d-flex align-items-center">
-      <div class="container text-white" data-aos="fade-up">
-        <h1 class="display-3 fw-bold mb-4">Tinh hoa ẩm thực Việt Nam</h1>
-        <p class="fs-4 mb-4">Phở • Bún • Cơm Tấm • Cơm Thố • Lẩu</p>
+    <!-- HERO SLIDESHOW -->
+    <section id="home" class="hero-slider">
+      <div class="slider-track">
+
+        <!-- Slide 1: Không gian nhà hàng -->
+        <div class="slide active" style="background-image:url('https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=1920&q=80')">
+          <div class="slide-overlay"></div>
+          <div class="slide-content text-white text-center">
+            <div class="slide-brand">
+              <span class="slide-logo">🍜</span>
+              <h1 class="slide-name">FoodieMenu</h1>
+            </div>
+            <p class="slide-slogan">Nơi hội tụ tinh hoa ẩm thực Việt Nam</p>
+            <a href="#menu" class="btn btn-success btn-lg rounded-pill px-5 mt-2">Khám phá thực đơn</a>
+          </div>
+        </div>
+
+        <!-- Slide 2: Món ăn nổi bật -->
+        <div class="slide" style="background-image:url('https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=1920&q=80')">
+          <div class="slide-overlay"></div>
+          <div class="slide-content text-white text-center">
+            <div class="slide-brand">
+              <span class="slide-logo">🍜</span>
+              <h1 class="slide-name">FoodieMenu</h1>
+            </div>
+            <p class="slide-slogan">Hương vị chân thật — Tâm hồn người Việt</p>
+            <a href="#menu" class="btn btn-success btn-lg rounded-pill px-5 mt-2">Khám phá thực đơn</a>
+          </div>
+        </div>
+
+        <!-- Slide 3: Không gian ấm cúng -->
+        <div class="slide" style="background-image:url('https://images.unsplash.com/photo-1552566626-52f8b828329b?w=1920&q=80')">
+          <div class="slide-overlay"></div>
+          <div class="slide-content text-white text-center">
+            <div class="slide-brand">
+              <span class="slide-logo">🍜</span>
+              <h1 class="slide-name">FoodieMenu</h1>
+            </div>
+            <p class="slide-slogan">Không gian ấm cúng — Bữa ăn đáng nhớ</p>
+            <a href="#menu" class="btn btn-success btn-lg rounded-pill px-5 mt-2">Khám phá thực đơn</a>
+          </div>
+        </div>
+
+        <!-- Slide 4: Ẩm thực Việt phong phú -->
+        <div class="slide" style="background-image:url('https://images.unsplash.com/photo-1559847844-5315695dadae?w=1920&q=80')">
+          <div class="slide-overlay"></div>
+          <div class="slide-content text-white text-center">
+            <div class="slide-brand">
+              <span class="slide-logo">🍜</span>
+              <h1 class="slide-name">FoodieMenu</h1>
+            </div>
+            <p class="slide-slogan">Truyền thống trong từng hương vị</p>
+            <a href="#menu" class="btn btn-success btn-lg rounded-pill px-5 mt-2">Khám phá thực đơn</a>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- NÚT ĐIỀU HƯỚNG -->
+      <button class="slider-btn slider-prev" onclick="prevSlide()">&#10094;</button>
+      <button class="slider-btn slider-next" onclick="nextSlide()">&#10095;</button>
+
+      <!-- CHẤM ĐIỀU HƯỚNG -->
+      <div class="slider-dots">
+        <span class="dot active" onclick="goToSlide(0)"></span>
+        <span class="dot" onclick="goToSlide(1)"></span>
+        <span class="dot" onclick="goToSlide(2)"></span>
+        <span class="dot" onclick="goToSlide(3)"></span>
       </div>
     </section>
 
