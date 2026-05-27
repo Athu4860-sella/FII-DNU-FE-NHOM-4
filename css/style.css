@@ -115,53 +115,68 @@ body {
   justify-content: center;
   padding-top: 70px;
   text-align: center;
+  gap: 0;
 }
 
-/* Logo + Tên nhà hàng */
-.slide-brand {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 14px;
-  margin-bottom: 16px;
-  animation: fadeDown 0.8s ease both;
+/* Nhãn nhỏ phía trên */
+.slide-sub {
+  font-size: clamp(0.75rem, 1.5vw, 0.95rem);
+  font-weight: 400;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.75);
+  margin-bottom: 14px;
+  animation: fadeUp 0.7s ease both;
 }
 
-.slide-logo {
-  font-size: 3rem;
-  filter: drop-shadow(0 2px 8px rgba(0,0,0,0.4));
-}
-
-.slide-name {
-  font-size: clamp(2.4rem, 6vw, 4.5rem);
-  font-weight: 800;
-  letter-spacing: 2px;
-  text-shadow: 0 3px 16px rgba(0, 0, 0, 0.6);
-  margin: 0;
-  line-height: 1;
-}
-
-/* Slogan */
-.slide-slogan {
-  font-size: clamp(1rem, 2.5vw, 1.4rem);
-  font-style: italic;
-  font-weight: 300;
+/* Tiêu đề lớn */
+.slide-title {
+  font-size: clamp(2rem, 5.5vw, 4rem);
+  font-weight: 700;
+  line-height: 1.15;
   letter-spacing: 1px;
-  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.5);
-  margin-bottom: 0;
-  animation: fadeDown 0.8s 0.2s ease both;
-  max-width: 600px;
+  text-shadow: 0 3px 20px rgba(0, 0, 0, 0.55);
+  margin-bottom: 22px;
+  animation: fadeUp 0.7s 0.15s ease both;
 }
 
-.slide-content .btn {
-  animation: fadeDown 0.8s 0.4s ease both;
-  box-shadow: 0 4px 20px rgba(25, 135, 84, 0.4);
-  font-weight: 600;
-  letter-spacing: 0.5px;
+/* Đường kẻ trang trí */
+.slide-divider {
+  width: 60px;
+  height: 3px;
+  background: #198754;
+  border-radius: 2px;
+  margin: 0 auto 28px;
+  animation: fadeUp 0.7s 0.28s ease both;
 }
 
-@keyframes fadeDown {
-  from { opacity: 0; transform: translateY(-20px); }
+/* Nút CTA */
+.slide-cta {
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #fff;
+  background: linear-gradient(135deg, #198754 0%, #20c472 100%);
+  border: none;
+  border-radius: 50px;
+  padding: 14px 40px;
+  box-shadow: 0 6px 28px rgba(25, 135, 84, 0.55), 0 2px 8px rgba(0,0,0,0.25);
+  transition: transform 0.25s ease, box-shadow 0.25s ease, filter 0.25s ease;
+  animation: fadeUp 0.7s 0.4s ease both;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.slide-cta:hover {
+  color: #fff;
+  filter: brightness(1.12);
+  transform: translateY(-3px) scale(1.04);
+  box-shadow: 0 12px 36px rgba(25, 135, 84, 0.65), 0 4px 12px rgba(0,0,0,0.3);
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(22px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 
