@@ -104,11 +104,11 @@ function filterCategory(category) {
 
 // ================= FILTER THEO GIÁ =================
 
-function filterPrice(type) {
+function filterPrice(type, btn) {
   document
-    .querySelectorAll(".btn-group .btn")
-    .forEach((btn) => btn.classList.remove("active"));
-  event.target.classList.add("active");
+    .querySelectorAll(".filter-pill")
+    .forEach((b) => b.classList.remove("active"));
+  if (btn) btn.classList.add("active");
 
   let result = [...foodsData];
 

@@ -3,11 +3,106 @@
 // ================= INITIALIZATION =================
 
 $(document).ready(function () {
+  updateUserDropdown();
   getCategories();
   getFoods();
   updateCartCount();
   initSlider();
+  renderCombos();
 });
+
+// ================= COMBO =================
+
+const DEFAULT_COMBOS = [
+  {
+    id: "combo-1",
+    TenMon: "Combo Sáng Đặc Biệt",
+    Gia: 85000,
+    oldPrice: 120000,
+    img: "https://images.unsplash.com/photo-1555126634-323283e090fa?w=600&q=80",
+    items: ["🍜 Phở Bò Đặc Biệt", "🍵 Trà Đào Cam Sả"],
+    tag: "Bán chạy",
+  },
+  {
+    id: "combo-2",
+    TenMon: "Combo Trưa Thịnh Vượng",
+    Gia: 75000,
+    oldPrice: 108000,
+    img: "https://images.unsplash.com/photo-1603133872878-684f208fb84b?w=600&q=80",
+    items: ["🍚 Cơm Tấm Sườn Bì", "🥤 Nước Cam Tươi"],
+    tag: "Mới",
+  },
+  {
+    id: "combo-3",
+    TenMon: "Combo Gia Đình",
+    Gia: 320000,
+    oldPrice: 460000,
+    img: "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=600&q=80",
+    items: ["🍲 Lẩu Thái Hải Sản", "🥤 4 Nước Tươi", "🍮 Tráng Miệng"],
+    tag: "HOT",
+  },
+  {
+    id: "combo-4",
+    TenMon: "Combo Đặc Biệt VIP",
+    Gia: 135000,
+    oldPrice: 195000,
+    img: "https://images.unsplash.com/photo-1569050467447-ce54b3bbc37d?w=600&q=80",
+    items: ["🍜 Bún Bò Huế", "🥗 Nem Cuốn (4 cái)", "🍧 Chè Thái"],
+    tag: "Tiết kiệm nhất",
+  },
+];
+
+function getCombosData() {
+  try {
+    const saved = localStorage.getItem("combos");
+    if (saved) return JSON.parse(saved);
+  } catch {}
+  localStorage.setItem("combos", JSON.stringify(DEFAULT_COMBOS));
+  return [...DEFAULT_COMBOS];
+}
+
+function renderCombos() {
+  const container = document.getElementById("combo-list");
+  if (!container) return;
+  const combosData = getCombosData();
+
+  container.innerHTML = combosData
+    .map((combo, idx) => {
+      const discount = Math.round((1 - combo.Gia / combo.oldPrice) * 100);
+      const itemsHtml = combo.items.map((item) => `<li>${item}</li>`).join("");
+      return `
+      <div class="col-sm-6 col-lg-3">
+        <div class="combo-card">
+          <div class="combo-badge">-${discount}%</div>
+          <div class="combo-tag">${combo.tag}</div>
+          <div class="combo-img-wrap">
+            <img src="${combo.img}" alt="${combo.TenMon}" class="combo-img" />
+          </div>
+          <div class="combo-body">
+            <h5 class="combo-name">${combo.TenMon}</h5>
+            <ul class="combo-items">${itemsHtml}</ul>
+            <div class="combo-price-row">
+              <span class="combo-old">${formatPrice(combo.oldPrice)}</span>
+              <span class="combo-new">${formatPrice(combo.Gia)}</span>
+            </div>
+            <button class="combo-btn" onclick="addComboToCart(${idx})">
+              <i class="fa-solid fa-cart-plus me-2"></i>Thêm vào giỏ
+            </button>
+          </div>
+        </div>
+      </div>`;
+    })
+    .join("");
+}
+
+function addComboToCart(idx) {
+  const combo = getCombosData()[idx];
+  addToCart(
+    { id: combo.id, TenMon: combo.TenMon, Gia: combo.Gia, HinhAnh: combo.img },
+    1,
+  );
+}
+window.addComboToCart = addComboToCart;
 
 // ================= SLIDESHOW =================
 
@@ -224,13 +319,18 @@ function checkout() {
     name,
     phone,
     address,
+    payment: selectedPayment === "cod" ? "Trực tiếp (COD)" : "Trực tuyến",
     items: [...cart],
     total:
       cart.reduce((sum, item) => sum + item.Gia * item.quantity, 0) + 20000,
   });
   localStorage.setItem("orderHistory", JSON.stringify(orderHistory));
 
-  Swal.fire("Thành công!", "Đơn hàng của bạn đã được ghi nhận 🎉", "success");
+  const paymentMsg =
+    selectedPayment === "cod"
+      ? "Vui lòng chuẩn bị tiền mặt khi nhận hàng 💵"
+      : "Đơn hàng của bạn đã được ghi nhận 🎉";
+  Swal.fire("Đặt hàng thành công!", paymentMsg, "success");
   cart = [];
   saveCart();
   $("#cartModal").modal("hide");
@@ -263,6 +363,7 @@ $("#loginForm").submit(function (e) {
       password === savedUser.password)
   ) {
     localStorage.setItem("isLogin", "true");
+    updateUserDropdown();
     Swal.fire("Thành công", "Đăng nhập thành công!", "success");
     $("#loginModal").modal("hide");
   } else {
@@ -314,7 +415,26 @@ $("#registerForm").submit(function (e) {
 
 function logout() {
   localStorage.removeItem("isLogin");
+  updateUserDropdown();
   Swal.fire("Thông báo", "Đã đăng xuất tài khoản", "info");
+}
+
+function updateUserDropdown() {
+  const isLogin = localStorage.getItem("isLogin") === "true";
+  const savedUser = JSON.parse(localStorage.getItem("user") || "null");
+  const name = isLogin ? (savedUser ? savedUser.username : "Admin") : null;
+
+  const greet = document.getElementById("dropGreet");
+  const sub = document.getElementById("dropSubtext");
+  const label = document.getElementById("userBtnLabel");
+
+  if (greet)
+    greet.textContent = isLogin ? `Xin chào, ${name}!` : "Xin chào, Khách!";
+  if (sub)
+    sub.textContent = isLogin
+      ? `Đã đăng nhập thành công`
+      : "Đăng nhập để xem đơn hàng";
+  if (label) label.textContent = isLogin ? name : "Tôi";
 }
 
 // ================= LỊCH SỬ ĐƠN =================
@@ -379,12 +499,40 @@ function toggleSearch() {
 
 // ================= BACK TO TOP =================
 
+const bttBtn = document.getElementById("backToTop");
+const bttCircle = document.getElementById("bttCircle");
+const bttCircumference = 2 * Math.PI * 18; // r=18 → ~113
+
 window.addEventListener("scroll", function () {
-  const btn = document.getElementById("backToTop");
-  if (btn) btn.style.display = window.scrollY > 300 ? "flex" : "none";
+  const scrollTop = window.scrollY;
+  const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+  const progress = docHeight > 0 ? scrollTop / docHeight : 0;
+
+  if (bttBtn) {
+    bttBtn.style.display = scrollTop > 300 ? "flex" : "none";
+  }
+  if (bttCircle) {
+    const offset = bttCircumference - progress * bttCircumference;
+    bttCircle.style.strokeDashoffset = offset;
+  }
 });
 
-document.getElementById("backToTop") &&
-  document.getElementById("backToTop").addEventListener("click", function () {
+bttBtn &&
+  bttBtn.addEventListener("click", function () {
     window.scrollTo({ top: 0, behavior: "smooth" });
   });
+
+// ================= PAYMENT METHOD =================
+
+let selectedPayment = "online";
+
+function selectPayment(method) {
+  selectedPayment = method;
+  document
+    .getElementById("pm-online")
+    .classList.toggle("active", method === "online");
+  document
+    .getElementById("pm-cod")
+    .classList.toggle("active", method === "cod");
+}
+window.selectPayment = selectPayment;

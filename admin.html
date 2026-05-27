@@ -20,8 +20,11 @@
           <h2 class="logo">🍜 FoodieMenu</h2>
         </a>
         <ul>
-          <li class="active">
+          <li class="active" id="nav-foods" onclick="showSection('foods')">
             <i class="fa-solid fa-utensils"></i> Quản lý món ăn
+          </li>
+          <li id="nav-combo" onclick="showSection('combo')">
+            <i class="fa-solid fa-gift"></i> Quản lý Combo
           </li>
           <li>
             <i class="fa-solid fa-list"></i> Danh mục
@@ -37,68 +40,112 @@
 
       <!-- MAIN -->
       <main class="main-content">
-        <!-- TOP BAR -->
-        <div class="top-bar">
-          <div>
-            <h1>Quản lý món ăn</h1>
-            <p>Thêm, sửa, xóa món ăn trong thực đơn</p>
+        <!-- ===== SECTION: MÓN ĂN ===== -->
+        <div id="foods-section">
+          <div class="top-bar">
+            <div>
+              <h1>Quản lý món ăn</h1>
+              <p>Thêm, sửa, xóa món ăn trong thực đơn</p>
+            </div>
+            <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#foodModal">
+              <i class="fa-solid fa-plus"></i> Thêm món ăn
+            </button>
           </div>
-          <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#foodModal">
-            <i class="fa-solid fa-plus"></i> Thêm món ăn
-          </button>
-        </div>
 
-        <!-- SEARCH -->
-        <div class="search-box mb-4">
-          <input type="text" id="searchInput" class="form-control" placeholder="Tìm món ăn..." />
-        </div>
-
-        <div id="fetchError" class="text-danger text-center mb-3" style="display: none"></div>
-
-        <!-- LOADING -->
-        <div class="text-center my-4" id="loading">
-          <div class="spinner-border text-success"></div>
-        </div>
-
-        <!-- STATS -->
-        <div class="row mb-4 g-3">
-          <div class="col-md-4">
-            <div class="card bg-success text-white p-3 border-0 rounded-4 shadow-sm">
-              <h6>Tổng số món</h6>
-              <h2 id="stat-total">0</h2>
+          <div class="search-box mb-4">
+            <div class="input-group admin-search">
+              <span class="input-group-text bg-white border-end-0">
+                <i class="fa-solid fa-magnifying-glass text-muted"></i>
+              </span>
+              <input type="text" id="searchInput" class="form-control border-start-0 ps-0"
+                placeholder="Tìm theo tên món ăn..." />
             </div>
           </div>
-          <div class="col-md-4">
-            <div class="card bg-warning text-dark p-3 border-0 rounded-4 shadow-sm">
-              <h6>Đang phục vụ</h6>
-              <h2 id="stat-available">0</h2>
+
+          <div id="fetchError" class="text-danger text-center mb-3" style="display: none"></div>
+
+          <div class="text-center my-4" id="loading">
+            <div class="spinner-border text-success"></div>
+          </div>
+
+          <div class="row mb-4 g-3">
+            <div class="col-md-4">
+              <div class="admin-stat-card bg-success text-white shadow-sm">
+                <h6><i class="fa-solid fa-bowl-food me-2"></i>Tổng số món</h6>
+                <h2 id="stat-total">0</h2>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="admin-stat-card bg-warning text-dark shadow-sm">
+                <h6><i class="fa-solid fa-circle-check me-2"></i>Đang phục vụ</h6>
+                <h2 id="stat-available">0</h2>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="admin-stat-card bg-danger text-white shadow-sm">
+                <h6><i class="fa-solid fa-circle-xmark me-2"></i>Đã hết món</h6>
+                <h2 id="stat-empty">0</h2>
+              </div>
             </div>
           </div>
-          <div class="col-md-4">
-            <div class="card bg-danger text-white p-3 border-0 rounded-4 shadow-sm">
-              <h6>Đã hết món</h6>
-              <h2 id="stat-empty">0</h2>
-            </div>
+
+          <div class="table-responsive">
+            <table class="table align-middle table-bordered">
+              <thead class="table-success">
+                <tr>
+                  <th>#</th>
+                  <th>Ảnh</th>
+                  <th>Tên món</th>
+                  <th>Danh mục</th>
+                  <th>Giá</th>
+                  <th>Trạng thái</th>
+                  <th>Đánh giá</th>
+                  <th>Thao tác</th>
+                </tr>
+              </thead>
+              <tbody id="foodTable"></tbody>
+            </table>
           </div>
         </div>
 
-        <!-- TABLE -->
-        <div class="table-responsive">
-          <table class="table align-middle table-bordered">
-            <thead class="table-success">
-              <tr>
-                <th>#</th>
-                <th>Ảnh</th>
-                <th>Tên món</th>
-                <th>Danh mục</th>
-                <th>Giá</th>
-                <th>Trạng thái</th>
-                <th>Đánh giá</th>
-                <th>Thao tác</th>
-              </tr>
-            </thead>
-            <tbody id="foodTable"></tbody>
-          </table>
+        <!-- ===== SECTION: COMBO ===== -->
+        <div id="combo-section" style="display:none">
+          <div class="top-bar">
+            <div>
+              <h1>Quản lý Combo</h1>
+              <p>Thêm, sửa, xóa combo ưu đãi hiển thị trên trang chủ</p>
+            </div>
+            <button class="btn btn-success" onclick="openComboModal()">
+              <i class="fa-solid fa-plus"></i> Thêm Combo
+            </button>
+          </div>
+
+          <div class="row mb-4 g-3">
+            <div class="col-md-4">
+              <div class="admin-stat-card bg-success text-white shadow-sm">
+                <h6><i class="fa-solid fa-gift me-2"></i>Tổng số combo</h6>
+                <h2 id="stat-combo-total">0</h2>
+              </div>
+            </div>
+          </div>
+
+          <div class="table-responsive">
+            <table class="table align-middle table-bordered">
+              <thead class="table-success">
+                <tr>
+                  <th>#</th>
+                  <th>Ảnh</th>
+                  <th>Tên combo</th>
+                  <th>Các món kèm</th>
+                  <th>Giá gốc</th>
+                  <th>Giá ưu đãi</th>
+                  <th>Tag</th>
+                  <th>Thao tác</th>
+                </tr>
+              </thead>
+              <tbody id="comboTable"></tbody>
+            </table>
+          </div>
         </div>
       </main>
     </div>
@@ -157,6 +204,56 @@
               </div>
 
               <button class="btn btn-success w-100">Lưu món ăn</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL COMBO -->
+    <div class="modal fade" id="comboModal" tabindex="-1">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header bg-success text-white">
+            <h5 id="comboModalTitle" class="modal-title fw-bold">Thêm Combo</h5>
+            <button class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            <form id="comboForm">
+              <div class="mb-3">
+                <label class="form-label fw-semibold">Tên combo <span class="text-danger">*</span></label>
+                <input type="text" id="combo-name" class="form-control" placeholder="VD: Combo Sáng Đặc Biệt" />
+                <small id="err-combo-name" class="text-danger"></small>
+              </div>
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label class="form-label fw-semibold">Giá ưu đãi (đ) <span class="text-danger">*</span></label>
+                  <input type="number" id="combo-price" class="form-control" placeholder="VD: 85000" />
+                  <small id="err-combo-price" class="text-danger"></small>
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label class="form-label fw-semibold">Giá gốc (đ) <span class="text-danger">*</span></label>
+                  <input type="number" id="combo-old-price" class="form-control" placeholder="VD: 120000" />
+                  <small id="err-combo-old-price" class="text-danger"></small>
+                </div>
+              </div>
+              <div class="mb-3">
+                <label class="form-label fw-semibold">Link ảnh <span class="text-danger">*</span></label>
+                <input type="text" id="combo-img" class="form-control" placeholder="https://..." />
+                <small id="err-combo-img" class="text-danger"></small>
+              </div>
+              <div class="mb-3">
+                <label class="form-label fw-semibold">Tag hiển thị</label>
+                <input type="text" id="combo-tag" class="form-control" placeholder="VD: Bán chạy / HOT / Mới" />
+              </div>
+              <div class="mb-3">
+                <label class="form-label fw-semibold">Các món kèm <small class="text-muted fw-normal">(mỗi món một dòng)</small></label>
+                <textarea id="combo-items-input" class="form-control" rows="4"
+                  placeholder="🍜 Phở Bò Đặc Biệt&#10;🍵 Trà Đào Cam Sả"></textarea>
+              </div>
+              <button type="submit" class="btn btn-success w-100 py-2 fw-bold">
+                <i class="fa-solid fa-floppy-disk me-2"></i>Lưu Combo
+              </button>
             </form>
           </div>
         </div>
