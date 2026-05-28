@@ -1020,6 +1020,95 @@ body {
 .admin-stat-card h6 { font-size: 13px; font-weight: 500; opacity: 0.85; margin-bottom: 6px; }
 .admin-stat-card h2 { font-size: 36px; font-weight: 800; margin: 0; }
 
+/* ---- SECTION FADE ANIMATION ---- */
+@keyframes sectionFadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.section-fade {
+  animation: sectionFadeIn 0.28s ease;
+}
+
+/* ---- SIDEBAR OVERLAY (mobile) ---- */
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.52);
+  backdrop-filter: blur(3px);
+  z-index: 1049;
+}
+
+.sidebar-overlay.show {
+  display: block;
+}
+
+/* ---- SIDEBAR HEADER WRAP ---- */
+.sidebar-header-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 4px 16px;
+}
+
+/* ---- SIDEBAR CLOSE BUTTON (mobile only) ---- */
+.sidebar-close-btn {
+  display: none;
+  background: rgba(255,255,255,0.14);
+  border: none;
+  color: white;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  font-size: 16px;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+  flex-shrink: 0;
+}
+
+.sidebar-close-btn:hover {
+  background: rgba(255,255,255,0.25);
+}
+
+/* ---- ADMIN MOBILE HEADER ---- */
+.admin-mobile-header {
+  display: none;
+  align-items: center;
+  justify-content: space-between;
+  background: linear-gradient(135deg, #0b3d2e 0%, #198754 100%);
+  color: white;
+  padding: 14px 18px;
+  margin: -36px -40px 28px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 4px 16px rgba(11,61,46,0.3);
+}
+
+/* ---- HAMBURGER BUTTON ---- */
+.hamburger-btn {
+  background: rgba(255,255,255,0.16);
+  border: none;
+  color: white;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hamburger-btn:hover {
+  background: rgba(255,255,255,0.26);
+  transform: scale(1.05);
+}
+
 /* =========================
    MODAL
 ========================= */
@@ -1440,18 +1529,49 @@ body.dark-mode .form-select {
     font-size: 40px;
   }
 
+  /* Sidebar thành drawer trượt từ trái */
   .sidebar {
-    display: none;
+    position: fixed;
+    left: -280px;
+    top: 0;
+    height: 100vh;
+    width: 260px;
+    z-index: 1050;
+    transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s;
+    overflow-y: auto;
+  }
+
+  .sidebar.open {
+    left: 0;
+    box-shadow: 8px 0 40px rgba(0,0,0,0.35);
+  }
+
+  /* Hiện nút đóng & mobile header */
+  .sidebar-close-btn {
+    display: flex;
+  }
+
+  .admin-mobile-header {
+    display: flex;
   }
 
   .main-content {
     padding: 20px;
   }
 
+  .admin-mobile-header {
+    margin: -20px -20px 24px;
+  }
+
   .top-bar {
     flex-direction: column;
-    gap: 20px;
+    gap: 16px;
     align-items: flex-start;
+  }
+
+  .top-bar .btn {
+    width: 100%;
+    justify-content: center;
   }
 
   .footer-logo {
@@ -1461,5 +1581,9 @@ body.dark-mode .form-select {
   .footer-title {
     margin-top: 20px;
     font-size: 26px;
+  }
+
+  .admin-stat-card h2 {
+    font-size: 28px;
   }
 }

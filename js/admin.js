@@ -112,46 +112,37 @@ function resetForm() {
 
 // ================= FETCH FOODS =================
 
-function getFoods() {
+async function getFoods() {
   showLoading();
   setFetchError("");
-
-  fetch(dishesAPI)
-    .then((response) => {
-      if (!response.ok) throw new Error("Network error");
-      return response.json();
-    })
-    .then((data) => {
-      foodsData = data;
-      renderFoods(data);
-      hideLoading();
-    })
-    .catch(() => {
-      hideLoading();
-      setFetchError("Lỗi tải dữ liệu món ăn. Vui lòng thử lại.");
-    });
+  try {
+    const res = await fetch(dishesAPI);
+    if (!res.ok) throw new Error("Network error");
+    foodsData = await res.json();
+    renderFoods(foodsData);
+  } catch {
+    setFetchError("Lỗi tải dữ liệu món ăn. Vui lòng thử lại.");
+  } finally {
+    hideLoading();
+  }
 }
 
 // ================= FETCH CATEGORIES =================
 
-function getCategories() {
-  fetch(categoriesAPI)
-    .then((response) => {
-      if (!response.ok) throw new Error("Network error");
-      return response.json();
-    })
-    .then((data) => {
-      let html = "<option value=''>Chọn danh mục</option>";
-      let i = 0;
-      while (i < data.length) {
-        html += `<option value="${data[i].TenDanhMuc}">${data[i].TenDanhMuc}</option>`;
-        i++;
-      }
-      danhMucEl.innerHTML = html;
-    })
-    .catch(() => {
-      setFetchError("Không tải được danh mục.");
-    });
+async function getCategories() {
+  try {
+    const res = await fetch(categoriesAPI);
+    if (!res.ok) throw new Error("Network error");
+    const data = await res.json();
+    danhMucEl.innerHTML = [
+      "<option value=''>Chọn danh mục</option>",
+      ...data.map(
+        (d) => `<option value="${d.TenDanhMuc}">${d.TenDanhMuc}</option>`,
+      ),
+    ].join("");
+  } catch {
+    setFetchError("Không tải được danh mục.");
+  }
 }
 
 // ================= RENDER FOODS =================
@@ -216,7 +207,7 @@ function renderFoods(data) {
 
 // ================= SUBMIT FORM =================
 
-foodForm.addEventListener("submit", function (event) {
+foodForm.addEventListener("submit", async function (event) {
   event.preventDefault();
   clearErrors();
 
@@ -235,29 +226,29 @@ foodForm.addEventListener("submit", function (event) {
     MoTa: moTaEl.value.trim(),
   };
 
-  const requestUrl = editId ? `${dishesAPI}/${editId}` : dishesAPI;
-  const requestMethod = editId ? "PUT" : "POST";
-  const successMessage = editId ? "Cập nhật thành công" : "Thêm thành công";
-  const failureMessage = editId ? "Cập nhật thất bại" : "Thêm thất bại";
+  const url = editId ? `${dishesAPI}/${editId}` : dishesAPI;
+  const method = editId ? "PUT" : "POST";
 
-  fetch(requestUrl, {
-    method: requestMethod,
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(foodData),
-  })
-    .then((response) => {
-      if (!response.ok) throw new Error("Network error");
-      return response.json();
-    })
-    .then(() => {
-      setFormMessage(successMessage, false);
-      resetForm();
-      foodModal.hide();
-      getFoods();
-    })
-    .catch(() => {
-      setFormMessage(failureMessage, true);
+  try {
+    const res = await fetch(url, {
+      method,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(foodData),
     });
+    if (!res.ok) throw new Error("Network error");
+    resetForm();
+    foodModal.hide();
+    await getFoods();
+    showMessage(
+      editId ? "Cập nhật món ăn thành công!" : "Thêm món ăn thành công!",
+      "success",
+    );
+  } catch {
+    setFormMessage(
+      editId ? "Cập nhật thất bại. Thử lại!" : "Thêm thất bại. Thử lại!",
+      true,
+    );
+  }
 });
 
 // ================= OPEN MODAL =================
@@ -303,21 +294,27 @@ function handleEdit(id) {
   foodModal.show();
 }
 
-function handleDelete(id) {
-  const confirmed = window.confirm("Bạn có chắc muốn xóa món ăn này?");
-  if (!confirmed) return;
+async function handleDelete(id) {
+  const result = await Swal.fire({
+    title: "Xóa món ăn này?",
+    text: "Hành động này không thể hoàn tác!",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#d33",
+    cancelButtonColor: "#6c757d",
+    confirmButtonText: "Xóa",
+    cancelButtonText: "Hủy",
+  });
+  if (!result.isConfirmed) return;
 
-  fetch(`${dishesAPI}/${id}`, { method: "DELETE" })
-    .then((response) => {
-      if (!response.ok) throw new Error("Network error");
-      return response.json();
-    })
-    .then(() => {
-      getFoods();
-    })
-    .catch(() => {
-      setFetchError("Xóa thất bại. Vui lòng thử lại.");
-    });
+  try {
+    const res = await fetch(`${dishesAPI}/${id}`, { method: "DELETE" });
+    if (!res.ok) throw new Error("Network error");
+    await getFoods();
+    showMessage("Đã xóa món ăn thành công!", "success");
+  } catch {
+    setFetchError("Xóa thất bại. Vui lòng thử lại.");
+  }
 }
 
 // ================= SEARCH =================
@@ -347,17 +344,52 @@ getCategories();
 
 const ALL_SECTIONS = ["foods", "combo", "danh-muc", "thong-ke"];
 
+const SECTION_TITLES = {
+  foods: "Quản lý món ăn",
+  combo: "Quản lý Combo",
+  "danh-muc": "Danh mục",
+  "thong-ke": "Thống kê",
+};
+
 function showSection(section) {
   ALL_SECTIONS.forEach((s) => {
     const el = document.getElementById(s + "-section");
     const nav = document.getElementById("nav-" + s);
-    if (el) el.style.display = s === section ? "block" : "none";
+    if (el) {
+      const isActive = s === section;
+      el.style.display = isActive ? "block" : "none";
+      if (isActive) {
+        el.classList.remove("section-fade");
+        void el.offsetWidth;
+        el.classList.add("section-fade");
+      }
+    }
     if (nav) nav.classList.toggle("active", s === section);
   });
+  const titleEl = document.getElementById("mobileSectionTitle");
+  if (titleEl) titleEl.textContent = SECTION_TITLES[section] || section;
   if (section === "combo") renderComboTable();
   if (section === "danh-muc") renderCatTable();
   if (section === "thong-ke") renderThongKe();
+  closeSidebar();
 }
+
+function openSidebar() {
+  document.getElementById("adminSidebar").classList.add("open");
+  document.getElementById("sidebarOverlay").classList.add("show");
+  document.body.style.overflow = "hidden";
+}
+
+function closeSidebar() {
+  const sidebar = document.getElementById("adminSidebar");
+  const overlay = document.getElementById("sidebarOverlay");
+  if (sidebar) sidebar.classList.remove("open");
+  if (overlay) overlay.classList.remove("show");
+  document.body.style.overflow = "";
+}
+
+window.openSidebar = openSidebar;
+window.closeSidebar = closeSidebar;
 
 // ================= COMBO CRUD =================
 
@@ -510,51 +542,50 @@ const catModalEl = document.getElementById("catModal");
 const catModal = catModalEl ? new bootstrap.Modal(catModalEl) : null;
 const catForm = document.getElementById("catForm");
 
-function renderCatTable() {
+async function renderCatTable() {
   const tbody = document.getElementById("catTable");
   if (!tbody) return;
   tbody.innerHTML = `<tr><td colspan="4" class="text-center py-3"><div class="spinner-border spinner-border-sm text-success"></div></td></tr>`;
 
-  fetch(categoriesAPI)
-    .then((r) => (r.ok ? r.json() : Promise.reject()))
-    .then((data) => {
-      categoriesData = data;
-      const statEl = document.getElementById("stat-cat-total");
-      if (statEl) statEl.textContent = data.length;
+  try {
+    const res = await fetch(categoriesAPI);
+    if (!res.ok) throw new Error("Network error");
+    const data = await res.json();
+    categoriesData = data;
+    const statEl = document.getElementById("stat-cat-total");
+    if (statEl) statEl.textContent = data.length;
 
-      if (!data.length) {
-        tbody.innerHTML = `<tr><td colspan="4" class="text-center text-muted py-4">Chưa có danh mục nào</td></tr>`;
-        return;
-      }
+    if (!data.length) {
+      tbody.innerHTML = `<tr><td colspan="4" class="text-center text-muted py-4">Chưa có danh mục nào</td></tr>`;
+      return;
+    }
 
-      tbody.innerHTML = data
-        .map((cat, i) => {
-          const count = foodsData.filter(
-            (f) => f.DanhMuc === cat.TenDanhMuc,
-          ).length;
-          return `
-          <tr>
-            <td>${i + 1}</td>
-            <td><strong>${cat.TenDanhMuc}</strong></td>
-            <td><span class="badge bg-success">${count} món</span></td>
-            <td>
-              <div class="d-flex gap-2">
-                <button class="btn btn-edit-admin" onclick="editCat('${cat.id}')">
-                  <i class="fa-solid fa-pen me-1"></i>Sửa
-                </button>
-                <button class="btn btn-delete-admin" onclick="deleteCat('${cat.id}')">
-                  <i class="fa-solid fa-trash me-1"></i>Xóa
-                </button>
-              </div>
-            </td>
-          </tr>`;
-        })
-        .join("");
-    })
-    .catch(() => {
-      if (tbody)
-        tbody.innerHTML = `<tr><td colspan="4" class="text-center text-danger py-3">Không tải được danh mục</td></tr>`;
-    });
+    tbody.innerHTML = data
+      .map((cat, i) => {
+        const count = foodsData.filter(
+          (f) => f.DanhMuc === cat.TenDanhMuc,
+        ).length;
+        return `
+        <tr>
+          <td>${i + 1}</td>
+          <td><strong>${cat.TenDanhMuc}</strong></td>
+          <td><span class="badge bg-success">${count} món</span></td>
+          <td>
+            <div class="d-flex gap-2">
+              <button class="btn btn-edit-admin" onclick="editCat('${cat.id}')">
+                <i class="fa-solid fa-pen me-1"></i>Sửa
+              </button>
+              <button class="btn btn-delete-admin" onclick="deleteCat('${cat.id}')">
+                <i class="fa-solid fa-trash me-1"></i>Xóa
+              </button>
+            </div>
+          </td>
+        </tr>`;
+      })
+      .join("");
+  } catch {
+    tbody.innerHTML = `<tr><td colspan="4" class="text-center text-danger py-3">Không tải được danh mục</td></tr>`;
+  }
 }
 
 function openCatModal(id = null) {
@@ -576,20 +607,32 @@ function editCat(id) {
   openCatModal(id);
 }
 
-function deleteCat(id) {
-  if (!confirm("Bạn có chắc muốn xóa danh mục này?")) return;
-  fetch(`${categoriesAPI}/${id}`, { method: "DELETE" })
-    .then((r) => (r.ok ? r.json() : Promise.reject()))
-    .then(() => {
-      renderCatTable();
-      getCategories();
-      showMessage("Đã xóa danh mục!", "success");
-    })
-    .catch(() => showMessage("Xóa thất bại!", "error"));
+async function deleteCat(id) {
+  const result = await Swal.fire({
+    title: "Xóa danh mục này?",
+    text: "Hành động này không thể hoàn tác!",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#d33",
+    cancelButtonColor: "#6c757d",
+    confirmButtonText: "Xóa",
+    cancelButtonText: "Hủy",
+  });
+  if (!result.isConfirmed) return;
+
+  try {
+    const res = await fetch(`${categoriesAPI}/${id}`, { method: "DELETE" });
+    if (!res.ok) throw new Error("Network error");
+    await renderCatTable();
+    await getCategories();
+    showMessage("Đã xóa danh mục thành công!", "success");
+  } catch {
+    showMessage("Xóa thất bại. Vui lòng thử lại!", "error");
+  }
 }
 
 catForm &&
-  catForm.addEventListener("submit", function (e) {
+  catForm.addEventListener("submit", async function (e) {
     e.preventDefault();
     const name = document.getElementById("cat-name").value.trim();
     document.getElementById("err-cat-name").textContent = "";
@@ -600,25 +643,27 @@ catForm &&
     }
     const url = editCatId ? `${categoriesAPI}/${editCatId}` : categoriesAPI;
     const method = editCatId ? "PUT" : "POST";
-    fetch(url, {
-      method,
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ TenDanhMuc: name }),
-    })
-      .then((r) => (r.ok ? r.json() : Promise.reject()))
-      .then(() => {
-        catModal && catModal.hide();
-        renderCatTable();
-        getCategories();
-        showMessage(
-          editCatId
-            ? "Cập nhật danh mục thành công!"
-            : "Thêm danh mục thành công!",
-          "success",
-        );
-        editCatId = null;
-      })
-      .catch(() => showMessage("Lưu thất bại. Vui lòng thử lại!", "error"));
+
+    try {
+      const res = await fetch(url, {
+        method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ TenDanhMuc: name }),
+      });
+      if (!res.ok) throw new Error("Network error");
+      catModal && catModal.hide();
+      await renderCatTable();
+      await getCategories();
+      showMessage(
+        editCatId
+          ? "Cập nhật danh mục thành công!"
+          : "Thêm danh mục thành công!",
+        "success",
+      );
+      editCatId = null;
+    } catch {
+      showMessage("Lưu thất bại. Vui lòng thử lại!", "error");
+    }
   });
 
 // ================= THỐNG KÊ =================

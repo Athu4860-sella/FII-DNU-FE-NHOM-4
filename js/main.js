@@ -1,5 +1,12 @@
 // main.js
 
+// ================= AUTH CONFIG =================
+// Tài khoản admin mặc định — thay đổi tại đây nếu cần
+const AUTH_CONFIG = {
+  adminUser: "admin",
+  adminPass: "123456",
+};
+
 // ================= INITIALIZATION =================
 
 $(document).ready(function () {
@@ -356,12 +363,14 @@ $("#loginForm").submit(function (e) {
   const password = $("#loginPassword").val();
   const savedUser = JSON.parse(localStorage.getItem("user"));
 
-  if (
-    (username === "admin" && password === "123456") ||
-    (savedUser &&
-      username === savedUser.username &&
-      password === savedUser.password)
-  ) {
+  const isDefaultAdmin =
+    username === AUTH_CONFIG.adminUser && password === AUTH_CONFIG.adminPass;
+  const isRegisteredUser =
+    savedUser &&
+    username === savedUser.username &&
+    password === savedUser.password;
+
+  if (isDefaultAdmin || isRegisteredUser) {
     localStorage.setItem("isLogin", "true");
     updateUserDropdown();
     Swal.fire("Thành công", "Đăng nhập thành công!", "success");
