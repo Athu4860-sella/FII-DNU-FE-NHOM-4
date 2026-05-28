@@ -159,7 +159,7 @@ body {
   color: #fff;
   background: linear-gradient(135deg, #198754 0%, #20c472 100%);
   border: none;
-  border-radius: 50px;
+border-radius: 50px;
   padding: 14px 40px;
   box-shadow: 0 6px 28px rgba(25, 135, 84, 0.55), 0 2px 8px rgba(0,0,0,0.25);
   transition: transform 0.25s ease, box-shadow 0.25s ease, filter 0.25s ease;
@@ -307,7 +307,7 @@ body {
   border: 3px solid #e2e8f0;
   transition: border-color 0.3s, transform 0.3s;
   position: relative;
-  z-index: 1;
+z-index: 1;
 }
 
 .category-card:hover img {
@@ -485,7 +485,7 @@ body {
   font-weight: 700;
   letter-spacing: 2px;
   text-transform: uppercase;
-  padding: 4px 14px;
+padding: 4px 14px;
   border-radius: 50px;
   margin-bottom: 10px;
 }
@@ -665,7 +665,7 @@ body {
   cursor: pointer;
   transition: all 0.22s ease;
   background: white;
-  user-select: none;
+user-select: none;
 }
 
 .payment-card:hover {
@@ -851,7 +851,7 @@ body {
 
 .footer-icon {
   color: #bbf7d0;
-  margin-right: 12px;
+margin-right: 12px;
   width: 25px;
 }
 
@@ -1019,7 +1019,6 @@ body {
 
 .admin-stat-card h6 { font-size: 13px; font-weight: 500; opacity: 0.85; margin-bottom: 6px; }
 .admin-stat-card h2 { font-size: 36px; font-weight: 800; margin: 0; }
-
 /* ---- SECTION FADE ANIMATION ---- */
 @keyframes sectionFadeIn {
   from { opacity: 0; transform: translateY(10px); }
@@ -1180,7 +1179,6 @@ table tbody td {
   font-size: 14px;
   box-shadow: none;
 }
-
 .admin-search .input-group-text {
   border-radius: 12px 0 0 12px;
 }
@@ -1340,7 +1338,7 @@ table tbody td {
 }
 
 .user-dropdown-header {
-  display: flex;
+display: flex;
   align-items: center;
   gap: 12px;
   background: linear-gradient(135deg, #198754, #20c997);
@@ -1461,43 +1459,188 @@ table tbody td {
 
 /* =========================
    DARK MODE
+/* =========================
+   DARK MODE
 ========================= */
 
 body.dark-mode {
-  background: #1a1a2e;
-  color: #e0e0e0;
+  background: #0c1a10;
+  color: #dceee0;
 }
 
 body.dark-mode .navbar {
-  background: rgba(26, 26, 46, 0.96) !important;
+  background: rgba(12, 26, 16, 0.97) !important;
+  border-bottom-color: rgba(25, 135, 84, 0.25);
 }
 
 body.dark-mode .navbar .navbar-nav .nav-link {
-  color: #a8d8a8;
+  color: #86c99a;
+}
+
+body.dark-mode .navbar .navbar-nav .nav-link:hover,
+body.dark-mode .navbar .navbar-nav .nav-link.active {
+  color: #ffffff;
+  background: rgba(25, 135, 84, 0.22);
 }
 
 body.dark-mode .card,
 body.dark-mode .food-card,
 body.dark-mode .category-card,
 body.dark-mode .info-box {
-  background: #16213e !important;
-  color: #e0e0e0;
+  background: #122018 !important;
+  color: #dceee0;
+  border-color: rgba(25, 135, 84, 0.15);
+}
+
+body.dark-mode .food-card {
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.35);
+}
+
+body.dark-mode .food-card:hover {
+  border-color: #198754;
+  box-shadow: 0 15px 30px rgba(25, 135, 84, 0.2) !important;
 }
 
 body.dark-mode .bg-white {
-  background: #16213e !important;
+  background: #122018 !important;
 }
 
 body.dark-mode .modal-content {
-  background: #16213e;
-  color: #e0e0e0;
+  background: #122018;
+color: #dceee0;
+  border-color: rgba(25, 135, 84, 0.2);
 }
 
 body.dark-mode .form-control,
 body.dark-mode .form-select {
-  background: #0f3460;
-  color: #e0e0e0;
+  background: #1a2e20;
+  color: #dceee0;
+  border-color: rgba(25, 135, 84, 0.4);
+}
+
+body.dark-mode .form-control:focus,
+body.dark-mode .form-select:focus {
+  background: #1e3327;
   border-color: #198754;
+  color: #dceee0;
+  box-shadow: 0 0 0 3px rgba(25, 135, 84, 0.18);
+}
+
+body.dark-mode .form-control::placeholder {
+  color: #6b9e78;
+}
+
+body.dark-mode .combo-section {
+  background: linear-gradient(160deg, #0c1f12 0%, #0f2417 50%, #0e1c13 100%);
+}
+
+body.dark-mode .combo-card {
+  background: #122018;
+  border-color: rgba(25, 135, 84, 0.18);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+body.dark-mode .combo-card:hover {
+  border-color: #198754;
+  box-shadow: 0 16px 40px rgba(25, 135, 84, 0.2);
+}
+
+body.dark-mode .combo-name {
+  color: #dceee0;
+}
+
+body.dark-mode .combo-items li {
+  color: #8fbf9a;
+}
+
+body.dark-mode .combo-old {
+  color: #5a7a62;
+}
+
+body.dark-mode .filter-bar {
+  background: #122018;
+  border-color: rgba(25, 135, 84, 0.2);
+}
+
+body.dark-mode .filter-pill {
+  background: #1a2e20;
+  border-color: rgba(25, 135, 84, 0.3);
+  color: #86c99a;
+}
+
+body.dark-mode .filter-pill:hover {
+  background: #1e3a26;
+  border-color: #198754;
+  color: #ffffff;
+}
+
+body.dark-mode .filter-pill.active {
+  background: #198754;
+  border-color: #198754;
+  color: white;
+}
+
+body.dark-mode .sort-wrap {
+  background: #1a2e20;
+  border-color: rgba(25, 135, 84, 0.3);
+}
+
+body.dark-mode .sort-select {
+  color: #86c99a;
+  background: transparent;
+}
+
+body.dark-mode .text-dark,
+body.dark-mode h1, body.dark-mode h2,
+body.dark-mode h3, body.dark-mode h4,
+body.dark-mode h5, body.dark-mode h6 {
+  color: #dceee0 !important;
+}
+
+body.dark-mode .text-muted {
+  color: #6b9e78 !important;
+}
+
+body.dark-mode .user-dropdown {
+  background: #122018;
+  border-color: rgba(25, 135, 84, 0.2);
+}
+
+body.dark-mode .user-menu-item {
+  color: #c0ddc8;
+}
+
+body.dark-mode .user-menu-item:hover {
+  background: #1a2e20 !important;
+  color: #4ade80 !important;
+}
+
+body.dark-mode .dropdown-divider {
+  border-color: rgba(25, 135, 84, 0.2);
+}
+
+body.dark-mode .payment-card {
+  background: #1a2e20;
+  border-color: rgba(25, 135, 84, 0.25);
+  color: #dceee0;
+}
+
+body.dark-mode .payment-card:hover,
+body.dark-mode .payment-card.active {
+  background: #1e3a26;
+  border-color: #198754;
+}
+
+body.dark-mode .pm-title {
+  color: #dceee0;
+}
+
+body.dark-mode .pm-sub {
+  color: #6b9e78;
+}
+
+body.dark-mode #dark-icon {
+  color: #4ade80;
 }
 
 /* =========================
@@ -1519,7 +1662,6 @@ body.dark-mode .form-select {
 /* =========================
    MOBILE
 ========================= */
-
 @media (max-width: 768px) {
   .hero {
     height: 400px;
@@ -1528,8 +1670,7 @@ body.dark-mode .form-select {
   .hero h1 {
     font-size: 40px;
   }
-
-  /* Sidebar thành drawer trượt từ trái */
+/* Sidebar thành drawer trượt từ trái */
   .sidebar {
     position: fixed;
     left: -280px;
