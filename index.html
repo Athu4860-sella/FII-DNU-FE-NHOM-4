@@ -5,9 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>🍜 FoodieMenu - Tinh hoa ẩm thực Việt</title>
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Playfair+Display:wght@700;800&display=swap"
+      rel="stylesheet"
+    />
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
@@ -16,24 +25,55 @@
 
   <body>
     <!-- NAVBAR -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm sticky-top">
+    <nav
+      class="navbar navbar-expand-lg navbar-light bg-white shadow-sm sticky-top"
+    >
       <div class="container">
-        <a class="navbar-brand fw-bold fs-3 text-success" href="#home">🍜 FoodieMenu</a>
+        <a class="navbar-brand fw-bold fs-3 text-success" href="#home"
+          >🍜 FoodieMenu</a
+        >
 
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
+        >
           <span class="navbar-toggler-icon"></span>
         </button>
 
         <div class="collapse navbar-collapse" id="navbarNav">
           <ul class="navbar-nav mx-auto gap-3">
-            <li class="nav-item"><a class="nav-link" href="#home" data-lang-key="navHome">Trang chủ</a></li>
-            <li class="nav-item"><a class="nav-link" href="#menu" data-lang-key="navMenu">Thực đơn</a></li>
-            <li class="nav-item"><a class="nav-link" href="#categories" data-lang-key="navCategories">Danh mục</a></li>
-            <li class="nav-item"><a class="nav-link" href="#contact" data-lang-key="navContact">Liên hệ</a></li>
+            <li class="nav-item">
+              <a class="nav-link" href="#home" data-lang-key="navHome"
+                >Trang chủ</a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#menu" data-lang-key="navMenu"
+                >Thực đơn</a
+              >
+            </li>
+            <li class="nav-item">
+              <a
+                class="nav-link"
+                href="#categories"
+                data-lang-key="navCategories"
+                >Danh mục</a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#contact" data-lang-key="navContact"
+                >Liên hệ</a
+              >
+            </li>
           </ul>
 
           <div class="d-flex align-items-center gap-3">
-            <button class="btn btn-outline-secondary rounded-circle border-0" onclick="toggleDarkMode()">
+            <button
+              class="btn btn-outline-secondary rounded-circle border-0"
+              onclick="toggleDarkMode()"
+            >
               <i class="fa-solid fa-moon" id="dark-icon"></i>
             </button>
 
@@ -42,8 +82,16 @@
             </button>
 
             <div class="search-wrapper">
-              <i class="fa-solid fa-magnifying-glass nav-icon" onclick="toggleSearch()"></i>
-              <input type="text" id="searchInput" class="search-input" placeholder="Tìm món ăn..." />
+              <i
+                class="fa-solid fa-magnifying-glass nav-icon"
+                onclick="toggleSearch()"
+              ></i>
+              <input
+                type="text"
+                id="searchInput"
+                class="search-input"
+                placeholder="Tìm món ăn..."
+              />
             </div>
 
             <div class="cart-wrapper" onclick="showCart()">
@@ -52,9 +100,20 @@
             </div>
 
             <div class="dropdown">
-              <button class="btn user-btn" id="userDropBtn" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+              <button
+                class="btn user-btn"
+                id="userDropBtn"
+                type="button"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
+              >
                 <i class="fa-solid fa-user" id="userBtnIcon"></i>
-                <span class="user-btn-label" id="userBtnLabel" data-lang-key="userMe">Tôi</span>
+                <span
+                  class="user-btn-label"
+                  id="userBtnLabel"
+                  data-lang-key="userMe"
+                  >Tôi</span
+                >
               </button>
               <ul class="dropdown-menu dropdown-menu-end user-dropdown">
                 <li>
@@ -63,22 +122,49 @@
                       <i class="fa-solid fa-user"></i>
                     </div>
                     <div>
-                      <div class="user-greet" id="dropGreet" data-lang-key="greeting">Xin chào, Khách!</div>
-                      <div class="user-subtext" id="dropSubtext" data-lang-key="greetingSub">Đăng nhập để xem đơn hàng</div>
+                      <div
+                        class="user-greet"
+                        id="dropGreet"
+                        data-lang-key="greeting"
+                      >
+                        Xin chào, Khách!
+                      </div>
+                      <div
+                        class="user-subtext"
+                        id="dropSubtext"
+                        data-lang-key="greetingSub"
+                      >
+                        Đăng nhập để xem đơn hàng
+                      </div>
                     </div>
                   </div>
                 </li>
                 <li>
-                  <a class="dropdown-item user-menu-item" href="#" data-bs-toggle="modal" data-bs-target="#loginModal">
-                    <span class="menu-icon-wrap" style="background:#e8f5e9;color:#198754">
+                  <a
+                    class="dropdown-item user-menu-item"
+                    href="#"
+                    data-bs-toggle="modal"
+                    data-bs-target="#loginModal"
+                  >
+                    <span
+                      class="menu-icon-wrap"
+                      style="background: #e8f5e9; color: #198754"
+                    >
                       <i class="fa-solid fa-right-to-bracket"></i>
                     </span>
                     <span data-lang-key="userLogin">Đăng nhập</span>
                   </a>
                 </li>
                 <li>
-                  <a class="dropdown-item user-menu-item" href="#" onclick="showOrderHistory()">
-                    <span class="menu-icon-wrap" style="background:#e3f2fd;color:#1565c0">
+                  <a
+                    class="dropdown-item user-menu-item"
+                    href="#"
+                    onclick="showOrderHistory()"
+                  >
+                    <span
+                      class="menu-icon-wrap"
+                      style="background: #e3f2fd; color: #1565c0"
+                    >
                       <i class="fa-solid fa-clock-rotate-left"></i>
                     </span>
                     <span data-lang-key="userHistory">Lịch sử đơn hàng</span>
@@ -86,7 +172,10 @@
                 </li>
                 <li>
                   <a class="dropdown-item user-menu-item" href="./admin.html">
-                    <span class="menu-icon-wrap" style="background:#f3e5f5;color:#7b1fa2">
+                    <span
+                      class="menu-icon-wrap"
+                      style="background: #f3e5f5; color: #7b1fa2"
+                    >
                       <i class="fa-solid fa-user-shield"></i>
                     </span>
                     <span data-lang-key="userAdmin">Quản trị</span>
@@ -94,8 +183,15 @@
                 </li>
                 <li><hr class="dropdown-divider my-2" /></li>
                 <li>
-                  <a class="dropdown-item user-menu-item text-danger" href="#" onclick="logout()">
-                    <span class="menu-icon-wrap" style="background:#ffebee;color:#c62828">
+                  <a
+                    class="dropdown-item user-menu-item text-danger"
+                    href="#"
+                    onclick="logout()"
+                  >
+                    <span
+                      class="menu-icon-wrap"
+                      style="background: #ffebee; color: #c62828"
+                    >
                       <i class="fa-solid fa-right-from-bracket"></i>
                     </span>
                     <span data-lang-key="userLogout">Đăng xuất</span>
@@ -124,12 +220,26 @@
               </div>
               <div class="mb-3">
                 <label class="form-label">Password</label>
-                <input type="password" id="loginPassword" class="form-control" />
+                <input
+                  type="password"
+                  id="loginPassword"
+                  class="form-control"
+                />
               </div>
-              <button class="btn btn-success w-100 rounded-pill" data-lang-key="loginBtn">Đăng nhập</button>
+              <button
+                class="btn btn-success w-100 rounded-pill"
+                data-lang-key="loginBtn"
+              >
+                Đăng nhập
+              </button>
               <p class="text-center mt-3">
                 <span data-lang-key="noAccount">Chưa có tài khoản?</span>
-                <span class="text-success fw-bold switch-form" onclick="showRegister()" data-lang-key="registerLink">Đăng ký ngay</span>
+                <span
+                  class="text-success fw-bold switch-form"
+                  onclick="showRegister()"
+                  data-lang-key="registerLink"
+                  >Đăng ký ngay</span
+                >
               </p>
             </form>
             <form id="registerForm" class="d-none">
@@ -139,16 +249,31 @@
               </div>
               <div class="mb-3">
                 <label class="form-label">Password</label>
-                <input type="password" id="registerPassword" class="form-control" />
+                <input
+                  type="password"
+                  id="registerPassword"
+                  class="form-control"
+                />
               </div>
               <div class="mb-3">
                 <label class="form-label">Nhập lại Password</label>
-                <input type="password" id="confirmPassword" class="form-control" />
+                <input
+                  type="password"
+                  id="confirmPassword"
+                  class="form-control"
+                />
               </div>
-              <button class="btn btn-success w-100 rounded-pill">Đăng ký</button>
+              <button class="btn btn-success w-100 rounded-pill">
+                Đăng ký
+              </button>
               <p class="text-center mt-3">
                 <span data-lang-key="haveAccount">Đã có tài khoản?</span>
-                <span class="text-success fw-bold switch-form" onclick="showLogin()" data-lang-key="loginLink">Đăng nhập</span>
+                <span
+                  class="text-success fw-bold switch-form"
+                  onclick="showLogin()"
+                  data-lang-key="loginLink"
+                  >Đăng nhập</span
+                >
               </p>
             </form>
           </div>
@@ -159,51 +284,75 @@
     <!-- HERO SLIDESHOW -->
     <section id="home" class="hero-slider">
       <div class="slider-track">
-
-        <div class="slide active" style="background-image:url('https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=1920&q=80')">
+        <div
+          class="slide active"
+          style="
+            background-image: url(&quot;https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=1920&q=80&quot;);
+          "
+        >
           <div class="slide-overlay"></div>
           <div class="slide-content text-white text-center">
             <p class="slide-sub">Nhà hàng ẩm thực Việt</p>
-            <h1 class="slide-title">Nơi hội tụ<br>tinh hoa ẩm thực</h1>
+            <h1 class="slide-title">Nơi hội tụ<br />tinh hoa ẩm thực</h1>
             <div class="slide-divider"></div>
             <a href="#menu" class="btn slide-cta px-5">Khám phá thực đơn</a>
           </div>
         </div>
 
-        <div class="slide" style="background-image:url('https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=1920&q=80')">
+        <div
+          class="slide"
+          style="
+            background-image: url(&quot;https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=1920&q=80&quot;);
+          "
+        >
           <div class="slide-overlay"></div>
           <div class="slide-content text-white text-center">
             <p class="slide-sub">Hương vị truyền thống</p>
-            <h1 class="slide-title">Chân thật trong<br>từng hương vị</h1>
+            <h1 class="slide-title">Chân thật trong<br />từng hương vị</h1>
             <div class="slide-divider"></div>
             <a href="#menu" class="btn slide-cta px-5">Khám phá thực đơn</a>
           </div>
         </div>
 
-        <div class="slide" style="background-image:url('https://images.unsplash.com/photo-1537047902294-62a40c20a6ae?w=1920&q=80')">
+        <div
+          class="slide"
+          style="
+            background-image: url(&quot;https://images.unsplash.com/photo-1537047902294-62a40c20a6ae?w=1920&q=80&quot;);
+          "
+        >
           <div class="slide-overlay"></div>
           <div class="slide-content text-white text-center">
             <p class="slide-sub">Không gian sang trọng</p>
-            <h1 class="slide-title">Ấm cúng &amp; đáng nhớ<br>trong từng bữa ăn</h1>
+            <h1 class="slide-title">
+              Ấm cúng &amp; đáng nhớ<br />trong từng bữa ăn
+            </h1>
             <div class="slide-divider"></div>
             <a href="#menu" class="btn slide-cta px-5">Khám phá thực đơn</a>
           </div>
         </div>
 
-        <div class="slide" style="background-image:url('https://images.unsplash.com/photo-1559847844-5315695dadae?w=1920&q=80')">
+        <div
+          class="slide"
+          style="
+            background-image: url(&quot;https://images.unsplash.com/photo-1559847844-5315695dadae?w=1920&q=80&quot;);
+          "
+        >
           <div class="slide-overlay"></div>
           <div class="slide-content text-white text-center">
             <p class="slide-sub">Tinh hoa ẩm thực Việt Nam</p>
-            <h1 class="slide-title">Truyền thống<br>trong từng món ăn</h1>
+            <h1 class="slide-title">Truyền thống<br />trong từng món ăn</h1>
             <div class="slide-divider"></div>
             <a href="#menu" class="btn slide-cta px-5">Khám phá thực đơn</a>
           </div>
         </div>
-
       </div>
 
-      <button class="slider-btn slider-prev" onclick="prevSlide()">&#10094;</button>
-      <button class="slider-btn slider-next" onclick="nextSlide()">&#10095;</button>
+      <button class="slider-btn slider-prev" onclick="prevSlide()">
+        &#10094;
+      </button>
+      <button class="slider-btn slider-next" onclick="nextSlide()">
+        &#10095;
+      </button>
 
       <div class="slider-dots">
         <span class="dot active" onclick="goToSlide(0)"></span>
@@ -218,9 +367,20 @@
       <div class="container">
         <div class="combo-header" data-aos="fade-up">
           <div>
-            <span class="combo-label" data-lang-key="comboLabel">Ưu đãi hôm nay</span>
-            <h2 class="combo-title" data-lang-key="comboTitle">🎁 Combo Tiết Kiệm</h2>
-            <p class="combo-desc" data-lang-key="comboDesc">Chọn combo — ăn ngon hơn, tiết kiệm hơn</p>
+            <span class="combo-label" data-lang-key="comboLabel"
+              >Ưu đãi hôm nay</span
+            >
+            <br>
+            <h2
+              class="combo-title d-inline-flex align-items-center px-4 py-2 rounded-pill bg-danger text-white shadow"
+            >
+              <i class="fa-solid fa-gift me-2 text-warning"></i>
+              Combo Tiết Kiệm
+            </h2>
+           
+            <p class="combo-desc" data-lang-key="comboDesc">
+              Chọn combo — ăn ngon hơn, tiết kiệm hơn
+            </p>
           </div>
         </div>
         <div id="combo-list" data-aos="fade-up" data-aos-delay="100"></div>
@@ -231,13 +391,35 @@
     <div class="container my-5">
       <div class="row">
         <div class="col-lg-9">
-          <div id="categories" class="d-flex justify-content-between align-items-center mb-4">
-            <h2 class="fw-bold" data-lang-key="categoryTitle">Danh mục món ăn</h2>
+          <div
+            id="categories"
+            class="d-flex justify-content-between align-items-center mb-4"
+          >
+            <h2 class="fw-bold" data-lang-key="categoryTitle">
+              Danh mục món ăn
+            </h2>
           </div>
-          <div class="row g-4 mb-5" id="categories-list" data-aos="fade-right"></div>
+          <div
+            class="row g-4 mb-5"
+            id="categories-list"
+            data-aos="fade-right"
+          ></div>
 
-          <div id="menu" class="d-flex justify-content-between align-items-center mb-4">
-            <h2 class="fw-bold" data-lang-key="menuTitle">🔥 Món ăn nổi bật</h2>
+          <div
+            id="menu"
+            class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2"
+          >
+            <h2 class="fw-bold mb-0" id="menu-section-title">
+              🍽️ Tất cả món ăn
+            </h2>
+            <button
+              class="btn btn-outline-success btn-sm rounded-pill px-3"
+              id="reset-category-btn"
+              onclick="showAllFoods()"
+              style="display: none"
+            >
+              <i class="fa-solid fa-rotate-left me-1"></i> Xem tất cả
+            </button>
           </div>
 
           <div class="text-center my-5" id="loading">
@@ -247,22 +429,34 @@
           <!-- FILTER & SORT -->
           <div class="filter-bar mb-4" data-aos="fade-up">
             <div class="filter-pills">
-              <button class="filter-pill active" onclick="filterPrice('all', this)">
-                <i class="fa-solid fa-border-all me-1"></i> <span data-lang-key="filterAll">Tất cả</span>
+              <button
+                class="filter-pill active"
+                onclick="filterPrice('all', this)"
+              >
+                <i class="fa-solid fa-border-all me-1"></i>
+                <span data-lang-key="filterAll">Tất cả</span>
               </button>
               <button class="filter-pill" onclick="filterPrice('low', this)">
-                <i class="fa-solid fa-tag me-1"></i> <span data-lang-key="filterLow">Dưới 100k</span>
+                <i class="fa-solid fa-tag me-1"></i>
+                <span data-lang-key="filterLow">Dưới 100k</span>
               </button>
               <button class="filter-pill" onclick="filterPrice('high', this)">
-                <i class="fa-solid fa-fire me-1"></i> <span data-lang-key="filterHigh">Trên 100k</span>
+                <i class="fa-solid fa-fire me-1"></i>
+                <span data-lang-key="filterHigh">Trên 100k</span>
               </button>
             </div>
             <div class="sort-wrap">
               <i class="fa-solid fa-arrow-up-wide-short sort-icon"></i>
               <select class="sort-select" onchange="sortFood(this.value)">
-                <option value="default" data-lang-key="sortDefault">Sắp xếp</option>
-                <option value="asc" data-lang-key="sortAsc">Giá tăng dần</option>
-                <option value="desc" data-lang-key="sortDesc">Giá giảm dần</option>
+                <option value="default" data-lang-key="sortDefault">
+                  Sắp xếp
+                </option>
+                <option value="asc" data-lang-key="sortAsc">
+                  Giá tăng dần
+                </option>
+                <option value="desc" data-lang-key="sortDesc">
+                  Giá giảm dần
+                </option>
               </select>
             </div>
           </div>
@@ -272,9 +466,15 @@
 
         <!-- RIGHT -->
         <div class="col-lg-3">
-          <div class="bg-white shadow rounded-4 p-4 info-box" data-aos="fade-left">
+          <div
+            class="bg-white shadow rounded-4 p-4 info-box"
+            data-aos="fade-left"
+          >
             <h3 class="fw-bold text-success mb-3">FoodieMenu</h3>
-            <p>Chuyên phục vụ món ăn Việt Nam truyền thống với nguyên liệu tươi ngon mỗi ngày.</p>
+            <p>
+              Chuyên phục vụ món ăn Việt Nam truyền thống với nguyên liệu tươi
+              ngon mỗi ngày.
+            </p>
             <hr />
             <h5 class="fw-bold">🕒 Giờ mở cửa</h5>
             <p>06:00 - 22:00</p>
@@ -306,26 +506,60 @@
         <div class="modal-content border-0 shadow">
           <div class="modal-header bg-success text-white">
             <h5 class="modal-title fw-bold">🛒 Giỏ hàng của bạn</h5>
-            <button class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            <button
+              class="btn-close btn-close-white"
+              data-bs-dismiss="modal"
+            ></button>
           </div>
           <div class="modal-body">
             <div class="row">
               <div class="col-lg-7 border-end">
-                <div id="cart-body" style="max-height: 400px; overflow-y: auto"></div>
-                <button class="btn btn-outline-danger btn-sm mt-3" onclick="clearCart()">
+                <div
+                  id="cart-body"
+                  style="max-height: 400px; overflow-y: auto"
+                ></div>
+                <button
+                  class="btn btn-outline-danger btn-sm mt-3"
+                  onclick="clearCart()"
+                >
                   <i class="fa-solid fa-trash me-1"></i> Xóa toàn bộ
                 </button>
               </div>
               <div class="col-lg-5">
                 <h5 class="fw-bold mb-3">Thông tin thanh toán</h5>
-                <input type="text" id="cus-name" class="form-control mb-2" placeholder="Họ tên" />
-                <input type="text" id="cus-phone" class="form-control mb-2" placeholder="Số điện thoại" />
-                <input type="text" id="cus-address" class="form-control mb-3" placeholder="Địa chỉ" />
+                <input
+                  type="text"
+                  id="cus-name"
+                  class="form-control mb-2"
+                  placeholder="Họ tên"
+                />
+                <input
+                  type="text"
+                  id="cus-phone"
+                  class="form-control mb-2"
+                  placeholder="Số điện thoại"
+                />
+                <input
+                  type="text"
+                  id="cus-address"
+                  class="form-control mb-3"
+                  placeholder="Địa chỉ"
+                />
 
                 <h6 class="fw-bold mb-2">Phương thức thanh toán</h6>
                 <div class="payment-methods mb-3">
-                  <label class="payment-card active" id="pm-online" onclick="selectPayment('online')">
-                    <input type="radio" name="payment" value="online" checked hidden />
+                  <label
+                    class="payment-card active"
+                    id="pm-online"
+                    onclick="selectPayment('online')"
+                  >
+                    <input
+                      type="radio"
+                      name="payment"
+                      value="online"
+                      checked
+                      hidden
+                    />
                     <span class="pm-icon">💳</span>
                     <div>
                       <div class="pm-title">Trực tuyến</div>
@@ -333,7 +567,11 @@
                     </div>
                     <i class="fa-solid fa-circle-check pm-check"></i>
                   </label>
-                  <label class="payment-card" id="pm-cod" onclick="selectPayment('cod')">
+                  <label
+                    class="payment-card"
+                    id="pm-cod"
+                    onclick="selectPayment('cod')"
+                  >
                     <input type="radio" name="payment" value="cod" hidden />
                     <span class="pm-icon">💵</span>
                     <div>
@@ -352,11 +590,16 @@
                     <span>Phí ship:</span> <span>20.000đ</span>
                   </div>
                   <hr />
-                  <div class="d-flex justify-content-between fw-bold fs-4 text-success">
+                  <div
+                    class="d-flex justify-content-between fw-bold fs-4 text-success"
+                  >
                     <span>Tổng cộng:</span> <span id="cart-total">0đ</span>
                   </div>
                 </div>
-                <button class="btn btn-success w-100 btn-lg mt-3 rounded-pill" onclick="checkout()">
+                <button
+                  class="btn btn-success w-100 btn-lg mt-3 rounded-pill"
+                  onclick="checkout()"
+                >
                   THANH TOÁN NGAY
                 </button>
               </div>
@@ -386,16 +629,25 @@
           <div class="col-lg-6">
             <h2 class="footer-logo mb-3">🍜 FoodieMenu</h2>
             <p class="footer-text">
-              Mang tinh hoa ẩm thực Việt đến mọi nhà. Thưởng thức hàng trăm món ăn hấp dẫn mỗi ngày với trải nghiệm hiện đại và chuyên nghiệp.
+              Mang tinh hoa ẩm thực Việt đến mọi nhà. Thưởng thức hàng trăm món
+              ăn hấp dẫn mỗi ngày với trải nghiệm hiện đại và chuyên nghiệp.
             </p>
             <a href="#menu" class="btn footer-btn mt-3">Khám phá menu</a>
           </div>
           <div class="col-lg-6">
             <h3 class="footer-title mb-4">📍 Liên hệ</h3>
             <div class="footer-contact">
-              <p><i class="fa-solid fa-phone footer-icon"></i> Hotline: 1900 1234</p>
-              <p><i class="fa-solid fa-envelope footer-icon"></i> foodiemenu@gmail.com</p>
-              <p><i class="fa-solid fa-location-dot footer-icon"></i> Hà Nội, Việt Nam</p>
+              <p>
+                <i class="fa-solid fa-phone footer-icon"></i> Hotline: 1900 1234
+              </p>
+              <p>
+                <i class="fa-solid fa-envelope footer-icon"></i>
+                foodiemenu@gmail.com
+              </p>
+              <p>
+                <i class="fa-solid fa-location-dot footer-icon"></i> Hà Nội,
+                Việt Nam
+              </p>
             </div>
             <div class="social-icons mt-4">
               <a href="#"><i class="fa-brands fa-facebook-f"></i></a>
@@ -417,21 +669,32 @@
     <!-- BACK TO TOP -->
     <button id="backToTop" title="Lên đầu trang">
       <svg class="btt-progress" viewBox="0 0 44 44">
-        <circle class="btt-track" cx="22" cy="22" r="18"/>
-        <circle class="btt-fill" id="bttCircle" cx="22" cy="22" r="18"/>
+        <circle class="btt-track" cx="22" cy="22" r="18" />
+        <circle class="btt-fill" id="bttCircle" cx="22" cy="22" r="18" />
       </svg>
       <i class="fa-solid fa-arrow-up btt-icon"></i>
     </button>
 
     <!-- TOAST -->
-    <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index:1050">
-      <div id="cartToast" class="toast align-items-center text-white bg-success border-0" role="alert">
+    <div
+      class="toast-container position-fixed bottom-0 end-0 p-3"
+      style="z-index: 1050"
+    >
+      <div
+        id="cartToast"
+        class="toast align-items-center text-white bg-success border-0"
+        role="alert"
+      >
         <div class="d-flex">
           <div class="toast-body">
             <i class="fa-solid fa-check-circle me-2"></i>
             <span id="toastMsg">Thêm thành công!</span>
           </div>
-          <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+          <button
+            type="button"
+            class="btn-close btn-close-white me-2 m-auto"
+            data-bs-dismiss="toast"
+          ></button>
         </div>
       </div>
     </div>
@@ -439,7 +702,9 @@
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-    <script>AOS.init({ duration: 800, once: true });</script>
+    <script>
+      AOS.init({ duration: 800, once: true });
+    </script>
 
     <script src="./js/utils.js"></script>
     <script src="./js/api.js"></script>

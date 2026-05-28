@@ -21,7 +21,8 @@ async function getCategories() {
   data.forEach((category) => {
     html += `
       <div class="col-6 col-md-4 col-lg-2">
-        <div class="category-card" onclick="filterCategory('${category.TenDanhMuc}')">
+        <div class="category-card" data-cat="${category.TenDanhMuc}" onclick="filterCategory('${category.TenDanhMuc}')">
+          <div class="cat-active-badge"><i class="fa-solid fa-star me-1"></i>Nổi bật</div>
           <img src="${category.HinhAnh}" />
           <h6 class="mt-2">${category.TenDanhMuc}</h6>
         </div>
@@ -63,11 +64,24 @@ function displayFoods(data) {
 
   data.forEach((food) => {
     const isAvailable = food.isAvailable !== false;
+    const showBadge = activeCategory !== null;
 
     html += `
       <div class="col-12 col-md-6 col-lg-4" data-aos="fade-up">
-        <div class="card food-card h-100 shadow-sm border-0">
-          <img src="${food.HinhAnh}" class="card-img-top" style="height:200px; object-fit:cover;">
+        <div class="card food-card h-100 shadow-sm border-0${showBadge ? " food-card--featured" : ""}">
+          <div class="food-img-wrap">
+            ${
+              showBadge
+                ? `<div class="food-featured-badge">
+              <span class="food-badge-inner">
+                <svg class="badge-star" viewBox="0 0 20 20"><polygon points="10,1 12.9,7 19.5,7.6 14.5,12 16.2,18.5 10,15 3.8,18.5 5.5,12 0.5,7.6 7.1,7" fill="currentColor"/></svg>
+                Nổi Bật
+              </span>
+            </div>`
+                : ""
+            }
+            <img src="${food.HinhAnh}" class="card-img-top food-card-img" style="height:200px; object-fit:cover;">
+          </div>
           <div class="card-body d-flex flex-column">
             <h5 class="fw-bold mb-1">${food.TenMon}</h5>
             <div class="price text-success fw-bold fs-4 mb-2">${formatPrice(food.Gia)}</div>
@@ -97,10 +111,49 @@ function displayFoods(data) {
 
 // ================= FILTER THEO CATEGORY =================
 
+let activeCategory = null;
+
 function filterCategory(category) {
+  activeCategory = category;
+
+  // Update active state on category cards
+  document.querySelectorAll(".category-card").forEach((card) => {
+    card.classList.toggle("active", card.dataset.cat === category);
+  });
+
+  // Update section title + show reset button
+  const titleEl = document.getElementById("menu-section-title");
+  const resetBtn = document.getElementById("reset-category-btn");
+  if (titleEl) titleEl.textContent = "📂 " + category;
+  if (resetBtn) resetBtn.style.display = "inline-flex";
+
+  // Scroll to food list
+  const menuEl = document.getElementById("menu");
+  if (menuEl) menuEl.scrollIntoView({ behavior: "smooth", block: "start" });
+
   const filteredFoods = foodsData.filter((food) => food.DanhMuc === category);
   displayFoods(filteredFoods);
 }
+
+function showAllFoods() {
+  activeCategory = null;
+
+  // Clear active state
+  document.querySelectorAll(".category-card").forEach((card) => {
+    card.classList.remove("active");
+  });
+
+  // Reset title + hide reset button
+  const titleEl = document.getElementById("menu-section-title");
+  const resetBtn = document.getElementById("reset-category-btn");
+  if (titleEl) titleEl.textContent = "🍽️ Tất cả món ăn";
+  if (resetBtn) resetBtn.style.display = "none";
+
+  displayFoods(foodsData);
+}
+
+window.filterCategory = filterCategory;
+window.showAllFoods = showAllFoods;
 
 // ================= FILTER THEO GIÁ =================
 

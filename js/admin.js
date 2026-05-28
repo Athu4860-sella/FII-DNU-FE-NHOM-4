@@ -11,12 +11,19 @@ const categoriesAPI = `${BASE_URL}/categories`;
 let foodsData = [];
 let editId = null;
 
+// ================= PAGINATION STATE =================
+
+let currentPage = 1;
+let pageSize = 8;
+let currentDisplayData = [];
+
 // ================= ELEMENTS =================
 
 const foodForm = document.getElementById("foodForm");
 const loadingEl = document.getElementById("loading");
 const foodTable = document.getElementById("foodTable");
 const searchInput = document.getElementById("searchInput");
+const filterCategoryEl = document.getElementById("filterCategory");
 const fetchError = document.getElementById("fetchError");
 const modalTitle = document.getElementById("modalTitle");
 const formMessage = document.getElementById("formMessage");
@@ -45,7 +52,6 @@ const statEmptyEl = document.getElementById("stat-empty");
 function showLoading() {
   loadingEl.style.display = "block";
 }
-
 function hideLoading() {
   loadingEl.style.display = "none";
 }
@@ -71,34 +77,27 @@ function clearErrors() {
 
 function validateForm() {
   clearErrors();
-
   const tenMon = tenMonEl.value.trim();
   const gia = Number(giaEl.value);
   const danhMuc = danhMucEl.value;
   const hinhAnh = hinhAnhEl.value.trim();
-
   let isValid = true;
-
   if (isEmpty(tenMon)) {
     errTenMon.innerText = "Tên không được trống";
     isValid = false;
   }
-
   if (!isValidPrice(gia)) {
     errGia.innerText = "Giá phải > 0";
     isValid = false;
   }
-
   if (danhMuc === "") {
     errDanhMuc.innerText = "Chọn danh mục";
     isValid = false;
   }
-
   if (!hinhAnh.startsWith("http")) {
     errHinhAnh.innerText = "Link ảnh không hợp lệ";
     isValid = false;
   }
-
   return isValid;
 }
 
@@ -119,7 +118,7 @@ async function getFoods() {
     const res = await fetch(dishesAPI);
     if (!res.ok) throw new Error("Network error");
     foodsData = await res.json();
-    renderFoods(foodsData);
+    applyFilters();
   } catch {
     setFetchError("Lỗi tải dữ liệu món ăn. Vui lòng thử lại.");
   } finally {
@@ -134,32 +133,82 @@ async function getCategories() {
     const res = await fetch(categoriesAPI);
     if (!res.ok) throw new Error("Network error");
     const data = await res.json();
+
+    // Populate form dropdown
     danhMucEl.innerHTML = [
       "<option value=''>Chọn danh mục</option>",
       ...data.map(
         (d) => `<option value="${d.TenDanhMuc}">${d.TenDanhMuc}</option>`,
       ),
     ].join("");
+
+    // Populate filter dropdown
+    if (filterCategoryEl) {
+      filterCategoryEl.innerHTML = [
+        "<option value=''>Tất cả danh mục</option>",
+        ...data.map(
+          (d) => `<option value="${d.TenDanhMuc}">${d.TenDanhMuc}</option>`,
+        ),
+      ].join("");
+    }
   } catch {
     setFetchError("Không tải được danh mục.");
   }
 }
 
-// ================= RENDER FOODS =================
+// ================= APPLY SEARCH & FILTER =================
+
+function applyFilters() {
+  const keyword = (searchInput ? searchInput.value : "").trim().toLowerCase();
+  const cat = filterCategoryEl ? filterCategoryEl.value : "";
+
+  let result = foodsData.filter((food) => {
+    const matchName = food.TenMon.toLowerCase().includes(keyword);
+    const matchCat = cat === "" || food.DanhMuc === cat;
+    return matchName && matchCat;
+  });
+
+  currentPage = 1;
+  renderFoods(result);
+}
+
+function resetSearch() {
+  if (searchInput) searchInput.value = "";
+  if (filterCategoryEl) filterCategoryEl.value = "";
+  applyFilters();
+}
+
+// ================= RENDER FOODS WITH PAGINATION =================
 
 function renderFoods(data) {
+  currentDisplayData = data;
+
+  const countAvailable = data.filter((f) => f.isAvailable !== false).length;
+  statTotalEl.innerText = foodsData.length;
+  statAvailableEl.innerText = foodsData.filter(
+    (f) => f.isAvailable !== false,
+  ).length;
+  statEmptyEl.innerText =
+    foodsData.length - foodsData.filter((f) => f.isAvailable !== false).length;
+
+  renderPage(currentPage);
+}
+
+function renderPage(page) {
+  const total = currentDisplayData.length;
+  const totalPages = Math.max(1, Math.ceil(total / pageSize));
+  currentPage = Math.max(1, Math.min(page, totalPages));
+
+  const start = (currentPage - 1) * pageSize;
+  const end = Math.min(start + pageSize, total);
+  const pageData = currentDisplayData.slice(start, end);
+
   let html = "";
-  let i = 0;
-  let countAvailable = 0;
-
-  while (i < data.length) {
-    const food = data[i];
+  pageData.forEach((food, i) => {
     const isAvailable = food.isAvailable !== false;
-    if (isAvailable) countAvailable++;
-
     html += `
       <tr>
-        <td>${i + 1}</td>
+        <td>${start + i + 1}</td>
         <td>
           <img src="${food.HinhAnh || "https://via.placeholder.com/70"}"
             width="70" height="70"
@@ -168,18 +217,18 @@ function renderFoods(data) {
         </td>
         <td>
           <strong>${food.TenMon}</strong><br />
-          <small>${truncateText(food.MoTa || "", 60)}</small>
+          <small class="text-muted">${truncateText(food.MoTa || "", 60)}</small>
         </td>
         <td><span class="badge bg-success">${food.DanhMuc}</span></td>
-        <td>${formatPrice(food.Gia)}</td>
+        <td class="fw-semibold">${formatPrice(food.Gia)}</td>
         <td>
           ${
             isAvailable
-              ? '<span class="badge bg-success">Còn món</span>'
-              : '<span class="badge bg-danger">Hết món</span>'
+              ? '<span class="badge bg-success"><i class="fa-solid fa-circle-check me-1"></i>Còn món</span>'
+              : '<span class="badge bg-danger"><i class="fa-solid fa-circle-xmark me-1"></i>Hết món</span>'
           }
         </td>
-        <td>${renderStars(Math.round(food.DanhGia))} ${food.DanhGia || 0}</td>
+        <td>${renderStars(Math.round(food.DanhGia))} <small>${food.DanhGia || 0}</small></td>
         <td>
           <div class="d-flex gap-2">
             <button type="button" class="btn btn-edit-admin btn-edit" data-id="${food.id}">
@@ -190,19 +239,89 @@ function renderFoods(data) {
             </button>
           </div>
         </td>
-      </tr>
-    `;
-    i++;
-  }
+      </tr>`;
+  });
 
   if (html === "") {
-    html = `<tr><td colspan="8" class="text-center">Không có món ăn phù hợp</td></tr>`;
+    html = `<tr><td colspan="8" class="text-center py-4 text-muted">
+      <i class="fa-solid fa-bowl-food fs-2 mb-2 d-block opacity-25"></i>
+      Không có món ăn phù hợp
+    </td></tr>`;
   }
 
   foodTable.innerHTML = html;
-  statTotalEl.innerText = data.length;
-  statAvailableEl.innerText = countAvailable;
-  statEmptyEl.innerText = data.length - countAvailable;
+  renderPagination(totalPages, total, start, end);
+}
+
+// ================= RENDER PAGINATION =================
+
+function renderPagination(totalPages, total, start, end) {
+  const paginationEl = document.getElementById("food-pagination");
+  if (!paginationEl) return;
+
+  if (total === 0) {
+    paginationEl.innerHTML = "";
+    return;
+  }
+
+  const showFrom = total > 0 ? start + 1 : 0;
+  const showTo = Math.min(end, total);
+
+  let pageBtns = "";
+
+  // Prev button
+  pageBtns += `<button class="page-btn" onclick="renderPage(${currentPage - 1})" ${currentPage === 1 ? "disabled" : ""}>
+    <i class="fa-solid fa-chevron-left"></i>
+  </button>`;
+
+  // Page numbers
+  const maxVisible = 5;
+  let startPage = Math.max(1, currentPage - Math.floor(maxVisible / 2));
+  let endPage = Math.min(totalPages, startPage + maxVisible - 1);
+  if (endPage - startPage < maxVisible - 1)
+    startPage = Math.max(1, endPage - maxVisible + 1);
+
+  if (startPage > 1) {
+    pageBtns += `<button class="page-btn" onclick="renderPage(1)">1</button>`;
+    if (startPage > 2)
+      pageBtns += `<span class="page-btn" style="cursor:default;border:none">…</span>`;
+  }
+
+  for (let i = startPage; i <= endPage; i++) {
+    pageBtns += `<button class="page-btn ${i === currentPage ? "active" : ""}" onclick="renderPage(${i})">${i}</button>`;
+  }
+
+  if (endPage < totalPages) {
+    if (endPage < totalPages - 1)
+      pageBtns += `<span class="page-btn" style="cursor:default;border:none">…</span>`;
+    pageBtns += `<button class="page-btn" onclick="renderPage(${totalPages})">${totalPages}</button>`;
+  }
+
+  // Next button
+  pageBtns += `<button class="page-btn" onclick="renderPage(${currentPage + 1})" ${currentPage === totalPages ? "disabled" : ""}>
+    <i class="fa-solid fa-chevron-right"></i>
+  </button>`;
+
+  paginationEl.innerHTML = `
+    <div class="page-info">
+      Hiển thị <strong>${showFrom}–${showTo}</strong> / <strong>${total}</strong> món ăn
+    </div>
+    <div class="d-flex align-items-center gap-2 flex-wrap">
+      <div class="page-btns">${pageBtns}</div>
+      <select class="page-size-select" onchange="changePageSize(this.value)">
+        <option value="8"  ${pageSize === 8 ? "selected" : ""}>8 / trang</option>
+        <option value="15" ${pageSize === 15 ? "selected" : ""}>15 / trang</option>
+        <option value="25" ${pageSize === 25 ? "selected" : ""}>25 / trang</option>
+        <option value="50" ${pageSize === 50 ? "selected" : ""}>50 / trang</option>
+      </select>
+    </div>
+  `;
+}
+
+function changePageSize(val) {
+  pageSize = parseInt(val);
+  currentPage = 1;
+  renderPage(1);
 }
 
 // ================= SUBMIT FORM =================
@@ -210,7 +329,6 @@ function renderFoods(data) {
 foodForm.addEventListener("submit", async function (event) {
   event.preventDefault();
   clearErrors();
-
   if (!validateForm()) {
     setFormMessage("Vui lòng sửa các lỗi bên trên.", true);
     return;
@@ -268,7 +386,6 @@ if (addButton) {
 foodTable.addEventListener("click", function (event) {
   const editButton = event.target.closest(".btn-edit");
   const deleteButton = event.target.closest(".btn-delete");
-
   if (editButton) handleEdit(editButton.dataset.id);
   if (deleteButton) handleDelete(deleteButton.dataset.id);
 });
@@ -279,7 +396,6 @@ function handleEdit(id) {
     setFetchError("Không tìm thấy món ăn.");
     return;
   }
-
   editId = id;
   modalTitle.innerText = "Cập nhật món ăn";
   tenMonEl.value = food.TenMon || "";
@@ -317,15 +433,10 @@ async function handleDelete(id) {
   }
 }
 
-// ================= SEARCH =================
+// ================= SEARCH & FILTER EVENTS =================
 
-searchInput.addEventListener("input", function () {
-  const keyword = this.value.trim().toLowerCase();
-  const filtered = foodsData.filter((food) =>
-    food.TenMon.toLowerCase().includes(keyword),
-  );
-  renderFoods(filtered);
-});
+searchInput && searchInput.addEventListener("input", applyFilters);
+filterCategoryEl && filterCategoryEl.addEventListener("change", applyFilters);
 
 // ================= LOGOUT =================
 
@@ -343,7 +454,6 @@ getCategories();
 // ================= SECTION SWITCHING =================
 
 const ALL_SECTIONS = ["foods", "combo", "danh-muc", "thong-ke"];
-
 const SECTION_TITLES = {
   foods: "Quản lý món ăn",
   combo: "Quản lý Combo",
@@ -465,8 +575,7 @@ function renderComboTable() {
       return `
       <tr>
         <td>${i + 1}</td>
-        <td><img src="${c.img}" width="70" height="70"
-              style="object-fit:cover;border-radius:10px"
+        <td><img src="${c.img}" width="70" height="70" style="object-fit:cover;border-radius:10px"
               onerror="this.src='https://via.placeholder.com/70'" /></td>
         <td><strong>${c.TenMon}</strong><br/>
             <span class="badge bg-danger">-${discount}%</span></td>
@@ -499,10 +608,15 @@ function openComboModal(id = null) {
   document.getElementById("comboModalTitle").textContent = id
     ? "Sửa Combo"
     : "Thêm Combo";
-  document.getElementById("err-combo-name").textContent = "";
-  document.getElementById("err-combo-price").textContent = "";
-  document.getElementById("err-combo-old-price").textContent = "";
-  document.getElementById("err-combo-img").textContent = "";
+  [
+    "err-combo-name",
+    "err-combo-price",
+    "err-combo-old-price",
+    "err-combo-img",
+  ].forEach((e) => {
+    const el = document.getElementById(e);
+    if (el) el.textContent = "";
+  });
 
   if (id) {
     const combo = loadCombos().find((c) => c.id === id);
@@ -533,6 +647,82 @@ function deleteCombo(id) {
   renderComboTable();
   showMessage("Đã xóa combo!", "success");
 }
+
+comboForm &&
+  comboForm.addEventListener("submit", function (e) {
+    e.preventDefault();
+    const name = document.getElementById("combo-name").value.trim();
+    const price = Number(document.getElementById("combo-price").value);
+    const oldPriceVal = Number(
+      document.getElementById("combo-old-price").value,
+    );
+    const img = document.getElementById("combo-img").value.trim();
+    const tag = document.getElementById("combo-tag").value.trim();
+    const itemsRaw = document.getElementById("combo-items-input").value.trim();
+    const items = itemsRaw
+      ? itemsRaw
+          .split("\n")
+          .map((s) => s.trim())
+          .filter(Boolean)
+      : [];
+
+    let valid = true;
+    if (!name) {
+      const e = document.getElementById("err-combo-name");
+      if (e) e.textContent = "Tên không được trống";
+      valid = false;
+    }
+    if (!price || price <= 0) {
+      const e = document.getElementById("err-combo-price");
+      if (e) e.textContent = "Giá phải > 0";
+      valid = false;
+    }
+    if (!oldPriceVal || oldPriceVal <= 0) {
+      const e = document.getElementById("err-combo-old-price");
+      if (e) e.textContent = "Giá gốc phải > 0";
+      valid = false;
+    }
+    if (!img.startsWith("http")) {
+      const e = document.getElementById("err-combo-img");
+      if (e) e.textContent = "Link ảnh không hợp lệ";
+      valid = false;
+    }
+    if (!valid) return;
+
+    const combos = loadCombos();
+    if (editComboId) {
+      const idx = combos.findIndex((c) => c.id === editComboId);
+      if (idx >= 0)
+        combos[idx] = {
+          ...combos[idx],
+          TenMon: name,
+          Gia: price,
+          oldPrice: oldPriceVal,
+          img,
+          tag,
+          items,
+        };
+    } else {
+      const newId = "combo-" + Date.now();
+      combos.push({
+        id: newId,
+        TenMon: name,
+        Gia: price,
+        oldPrice: oldPriceVal,
+        img,
+        tag,
+        items,
+      });
+    }
+    saveCombos(combos);
+    comboModal && comboModal.hide();
+    renderComboTable();
+    showMessage(
+      editComboId ? "Cập nhật combo thành công!" : "Thêm combo thành công!",
+      "success",
+    );
+    editComboId = null;
+  });
 
 // ================= DANH MỤC CRUD =================
 
@@ -643,7 +833,6 @@ catForm &&
     }
     const url = editCatId ? `${categoriesAPI}/${editCatId}` : categoriesAPI;
     const method = editCatId ? "PUT" : "POST";
-
     try {
       const res = await fetch(url, {
         method,
@@ -698,145 +887,55 @@ function renderThongKe() {
       </div>
       <div class="col-6 col-md-3">
         <div class="admin-stat-card bg-danger text-white shadow-sm">
-          <h6><i class="fa-solid fa-gift me-2"></i>Combo ưu đãi</h6>
+          <h6><i class="fa-solid fa-gift me-2"></i>Combo</h6>
           <h2>${combos.length}</h2>
         </div>
-      </div>`;
+      </div>
+    `;
   }
 
-  const catMap = {};
-  foodsData.forEach((f) => {
-    const cat = f.DanhMuc || "Khác";
-    catMap[cat] = (catMap[cat] || 0) + 1;
-  });
-  const sorted = Object.entries(catMap).sort((a, b) => b[1] - a[1]);
-  const maxVal = sorted.length ? sorted[0][1] : 1;
-
+  // Category chart
   const chartEl = document.getElementById("tk-category-chart");
   if (chartEl) {
-    if (!sorted.length) {
-      chartEl.innerHTML = `<p class="text-muted text-center">Chưa có dữ liệu</p>`;
-    } else {
-      chartEl.innerHTML = sorted
-        .map(([name, count]) => {
-          const pct = Math.round((count / maxVal) * 100);
-          return `
-          <div class="mb-3">
-            <div class="d-flex justify-content-between mb-1">
-              <span class="fw-semibold" style="font-size:14px">${name}</span>
-              <span class="text-muted" style="font-size:13px">${count} món</span>
-            </div>
-            <div style="background:#e9ecef;border-radius:8px;height:12px;overflow:hidden">
-              <div style="background:linear-gradient(90deg,#198754,#20c997);height:12px;border-radius:8px;width:${pct}%;transition:width 0.7s ease"></div>
-            </div>
-          </div>`;
-        })
-        .join("");
-    }
+    const catCounts = {};
+    foodsData.forEach((f) => {
+      if (f.DanhMuc) catCounts[f.DanhMuc] = (catCounts[f.DanhMuc] || 0) + 1;
+    });
+    const maxCount = Math.max(...Object.values(catCounts), 1);
+
+    chartEl.innerHTML = Object.entries(catCounts)
+      .map(([cat, count]) => {
+        const pct = Math.round((count / maxCount) * 100);
+        return `
+        <div class="mb-3">
+          <div class="d-flex justify-content-between mb-1">
+            <span class="fw-semibold" style="font-size:0.9rem">${cat}</span>
+            <span class="badge bg-success">${count} món</span>
+          </div>
+          <div class="progress" style="height:10px;border-radius:8px">
+            <div class="progress-bar bg-success" style="width:${pct}%;border-radius:8px"></div>
+          </div>
+        </div>`;
+      })
+      .join("");
   }
 
-  const comboEl = document.getElementById("tk-combo-list");
-  if (comboEl) {
-    if (!combos.length) {
-      comboEl.innerHTML = `<p class="text-muted text-center py-3">Chưa có combo nào</p>`;
-    } else {
-      comboEl.innerHTML = combos
-        .slice(0, 6)
-        .map((c) => {
-          const disc = Math.round((1 - c.Gia / c.oldPrice) * 100);
-          return `
-          <div class="d-flex align-items-center gap-3 mb-3 p-2 rounded-3" style="background:#f8f9fa">
-            <img src="${c.img}" width="46" height="46"
-              style="border-radius:10px;object-fit:cover;flex-shrink:0"
-              onerror="this.src='https://via.placeholder.com/46'" />
-            <div style="flex:1;min-width:0">
-              <div class="fw-semibold text-truncate" style="font-size:13px">${c.TenMon}</div>
-              <div class="text-success fw-bold" style="font-size:13px">${formatPrice(c.Gia)}</div>
-            </div>
-            <span class="badge bg-danger">-${disc}%</span>
-          </div>`;
-        })
-        .join("");
-    }
+  // Combo list
+  const comboListEl = document.getElementById("tk-combo-list");
+  if (comboListEl) {
+    comboListEl.innerHTML = combos
+      .map((c) => {
+        const disc = Math.round((1 - c.Gia / c.oldPrice) * 100);
+        return `
+        <div class="d-flex align-items-center gap-3 border-bottom pb-2 mb-2">
+          <img src="${c.img}" width="50" height="50" style="object-fit:cover;border-radius:8px" onerror="this.src='https://via.placeholder.com/50'" />
+          <div class="flex-grow-1">
+            <div class="fw-semibold" style="font-size:0.9rem">${c.TenMon}</div>
+            <div class="text-success fw-bold">${formatPrice(c.Gia)} <s class="text-muted fw-normal" style="font-size:0.8rem">${formatPrice(c.oldPrice)}</s></div>
+          </div>
+          <span class="badge bg-danger">-${disc}%</span>
+        </div>`;
+      })
+      .join("");
   }
 }
-
-comboForm &&
-  comboForm.addEventListener("submit", function (e) {
-    e.preventDefault();
-
-    const name = document.getElementById("combo-name").value.trim();
-    const price = Number(document.getElementById("combo-price").value);
-    const oldPrice = Number(document.getElementById("combo-old-price").value);
-    const img = document.getElementById("combo-img").value.trim();
-    const tag = document.getElementById("combo-tag").value.trim();
-    const itemsRaw = document.getElementById("combo-items-input").value.trim();
-
-    let valid = true;
-    document.getElementById("err-combo-name").textContent = "";
-    document.getElementById("err-combo-price").textContent = "";
-    document.getElementById("err-combo-old-price").textContent = "";
-    document.getElementById("err-combo-img").textContent = "";
-
-    if (!name) {
-      document.getElementById("err-combo-name").textContent =
-        "Tên không được trống";
-      valid = false;
-    }
-    if (!price || price <= 0) {
-      document.getElementById("err-combo-price").textContent = "Giá phải > 0";
-      valid = false;
-    }
-    if (!oldPrice || oldPrice <= price) {
-      document.getElementById("err-combo-old-price").textContent =
-        "Giá gốc phải lớn hơn giá ưu đãi";
-      valid = false;
-    }
-    if (!img.startsWith("http")) {
-      document.getElementById("err-combo-img").textContent =
-        "Link ảnh không hợp lệ";
-      valid = false;
-    }
-    if (!valid) return;
-
-    const items = itemsRaw
-      ? itemsRaw
-          .split("\n")
-          .map((s) => s.trim())
-          .filter(Boolean)
-      : [];
-    const combos = loadCombos();
-
-    if (editComboId) {
-      const idx = combos.findIndex((c) => c.id === editComboId);
-      if (idx >= 0)
-        combos[idx] = {
-          ...combos[idx],
-          TenMon: name,
-          Gia: price,
-          oldPrice,
-          img,
-          tag,
-          items,
-        };
-    } else {
-      combos.push({
-        id: "combo-" + Date.now(),
-        TenMon: name,
-        Gia: price,
-        oldPrice,
-        img,
-        tag,
-        items,
-      });
-    }
-
-    saveCombos(combos);
-    comboModal && comboModal.hide();
-    renderComboTable();
-    showMessage(
-      editComboId ? "Cập nhật combo thành công!" : "Thêm combo thành công!",
-      "success",
-    );
-    editComboId = null;
-  });
