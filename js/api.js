@@ -79,7 +79,7 @@ function displayFoods(data) {
 
             <div class="d-flex gap-2 mt-auto">
               <button class="btn btn-outline-success flex-fill rounded-pill" onclick='showDetail(${JSON.stringify(food)})'>
-                Chi tiết
+                <span data-lang-key="detail">Chi tiết</span>
               </button>
               <button class="btn btn-success rounded-circle ${isAvailable ? "" : "disabled"}"
                 onclick='addToCart(${JSON.stringify(food)}, document.getElementById("qty-${food.id}").value)'>

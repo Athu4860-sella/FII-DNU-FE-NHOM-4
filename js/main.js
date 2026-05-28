@@ -1,7 +1,6 @@
 // main.js
 
 // ================= AUTH CONFIG =================
-// Tài khoản admin mặc định — thay đổi tại đây nếu cần
 const AUTH_CONFIG = {
   adminUser: "admin",
   adminPass: "123456",
@@ -16,9 +15,19 @@ $(document).ready(function () {
   updateCartCount();
   initSlider();
   renderCombos();
+
+  // Áp dụng ngôn ngữ đã lưu
+  applyLanguage(localStorage.getItem("lang") || "vi");
+
+  // Áp dụng dark mode đã lưu
+  if (localStorage.getItem("darkMode") === "on") {
+    document.body.classList.add("dark-mode");
+    const icon = document.getElementById("dark-icon");
+    if (icon) icon.classList.replace("fa-moon", "fa-sun");
+  }
 });
 
-// ================= COMBO =================
+// ================= COMBO CAROUSEL =================
 
 const DEFAULT_COMBOS = [
   {
@@ -68,38 +77,157 @@ function getCombosData() {
   return [...DEFAULT_COMBOS];
 }
 
+let comboIndex = 0;
+let comboAutoTimer = null;
+
+function getComboVisibleCount() {
+  if (window.innerWidth >= 992) return 4;
+  if (window.innerWidth >= 576) return 2;
+  return 1;
+}
+
+function initComboCarousel() {
+  const track = document.getElementById("combo-track");
+  if (!track) return;
+
+  const cards = track.querySelectorAll(".combo-slide-item");
+  const totalCards = cards.length;
+  const visible = getComboVisibleCount();
+
+  function updateDots() {
+    document.querySelectorAll(".combo-dot").forEach((d, i) => {
+      d.classList.toggle("active", i === comboIndex);
+    });
+  }
+
+  function goTo(index) {
+    const total = track.querySelectorAll(".combo-slide-item").length;
+    const vis = getComboVisibleCount();
+    comboIndex = Math.max(0, Math.min(index, total - vis));
+    const cardWidth = track.querySelector(".combo-slide-item").offsetWidth + 16;
+    track.style.transform = `translateX(-${comboIndex * cardWidth}px)`;
+    updateDots();
+  }
+
+  window.comboPrev = function () {
+    goTo(comboIndex - 1);
+    resetComboAuto();
+  };
+
+  window.comboNext = function () {
+    const total = track.querySelectorAll(".combo-slide-item").length;
+    const vis = getComboVisibleCount();
+    if (comboIndex >= total - vis) {
+      goTo(0);
+    } else {
+      goTo(comboIndex + 1);
+    }
+    resetComboAuto();
+  };
+
+  window.comboGoTo = function (i) {
+    goTo(i);
+    resetComboAuto();
+  };
+
+  function autoSlide() {
+    const total = track.querySelectorAll(".combo-slide-item").length;
+    const vis = getComboVisibleCount();
+    if (comboIndex >= total - vis) {
+      goTo(0);
+    } else {
+      goTo(comboIndex + 1);
+    }
+  }
+
+  function startComboAuto() {
+    clearInterval(comboAutoTimer);
+    comboAutoTimer = setInterval(autoSlide, 3500);
+  }
+
+  function resetComboAuto() {
+    clearInterval(comboAutoTimer);
+    startComboAuto();
+  }
+
+  // Render dots
+  const dotsEl = document.getElementById("combo-dots");
+  if (dotsEl) {
+    const dotCount = Math.max(1, totalCards - visible + 1);
+    dotsEl.innerHTML = Array.from({ length: dotCount })
+      .map(
+        (_, i) =>
+          `<span class="combo-dot ${i === 0 ? "active" : ""}" onclick="comboGoTo(${i})"></span>`,
+      )
+      .join("");
+  }
+
+  // Pause on hover
+  const wrapper = document.getElementById("combo-carousel-wrapper");
+  if (wrapper) {
+    wrapper.addEventListener("mouseenter", () => clearInterval(comboAutoTimer));
+    wrapper.addEventListener("mouseleave", startComboAuto);
+  }
+
+  // Touch swipe
+  let touchStartX = 0;
+  track.addEventListener("touchstart", (e) => {
+    touchStartX = e.touches[0].clientX;
+  });
+  track.addEventListener("touchend", (e) => {
+    const diff = touchStartX - e.changedTouches[0].clientX;
+    if (Math.abs(diff) > 40) diff > 0 ? window.comboNext() : window.comboPrev();
+  });
+
+  window.addEventListener("resize", () => goTo(0));
+  startComboAuto();
+}
+
 function renderCombos() {
   const container = document.getElementById("combo-list");
   if (!container) return;
   const combosData = getCombosData();
 
-  container.innerHTML = combosData
+  const itemsHtml = combosData
     .map((combo, idx) => {
       const discount = Math.round((1 - combo.Gia / combo.oldPrice) * 100);
-      const itemsHtml = combo.items.map((item) => `<li>${item}</li>`).join("");
+      const itemsList = combo.items.map((item) => `<li>${item}</li>`).join("");
       return `
-      <div class="col-sm-6 col-lg-3">
-        <div class="combo-card">
-          <div class="combo-badge">-${discount}%</div>
-          <div class="combo-tag">${combo.tag}</div>
-          <div class="combo-img-wrap">
-            <img src="${combo.img}" alt="${combo.TenMon}" class="combo-img" />
-          </div>
-          <div class="combo-body">
-            <h5 class="combo-name">${combo.TenMon}</h5>
-            <ul class="combo-items">${itemsHtml}</ul>
-            <div class="combo-price-row">
-              <span class="combo-old">${formatPrice(combo.oldPrice)}</span>
-              <span class="combo-new">${formatPrice(combo.Gia)}</span>
+        <div class="combo-slide-item">
+          <div class="combo-card">
+            <div class="combo-badge">-${discount}%</div>
+            <div class="combo-tag">${combo.tag}</div>
+            <div class="combo-img-wrap">
+              <img src="${combo.img}" alt="${combo.TenMon}" class="combo-img" />
             </div>
-            <button class="combo-btn" onclick="addComboToCart(${idx})">
-              <i class="fa-solid fa-cart-plus me-2"></i>Thêm vào giỏ
-            </button>
+            <div class="combo-body">
+              <h5 class="combo-name">${combo.TenMon}</h5>
+              <ul class="combo-items">${itemsList}</ul>
+              <div class="combo-price-row">
+                <span class="combo-old">${formatPrice(combo.oldPrice)}</span>
+                <span class="combo-new">${formatPrice(combo.Gia)}</span>
+              </div>
+              <button class="combo-btn" onclick="addComboToCart(${idx})">
+                <i class="fa-solid fa-cart-plus me-2"></i><span data-lang-key="addToCart">Thêm vào giỏ</span>
+              </button>
+            </div>
           </div>
-        </div>
-      </div>`;
+        </div>`;
     })
     .join("");
+
+  container.innerHTML = `
+    <div class="combo-carousel-outer">
+      <button class="combo-nav-btn combo-nav-prev" onclick="comboPrev()">&#10094;</button>
+      <div class="combo-carousel-viewport" id="combo-carousel-wrapper">
+        <div class="combo-carousel-track" id="combo-track">${itemsHtml}</div>
+      </div>
+      <button class="combo-nav-btn combo-nav-next" onclick="comboNext()">&#10095;</button>
+    </div>
+    <div class="combo-dots-row" id="combo-dots"></div>
+  `;
+
+  setTimeout(initComboCarousel, 50);
 }
 
 function addComboToCart(idx) {
@@ -118,7 +246,6 @@ let sliderInterval = null;
 
 function initSlider() {
   startSlider();
-
   const sliderEl = document.querySelector(".hero-slider");
   if (sliderEl) {
     sliderEl.addEventListener("mouseenter", () =>
@@ -132,12 +259,9 @@ function showSlide(index) {
   const slides = document.querySelectorAll(".slide");
   const dots = document.querySelectorAll(".dot");
   if (!slides.length) return;
-
   slides[currentSlide].classList.remove("active");
   dots[currentSlide].classList.remove("active");
-
   currentSlide = (index + slides.length) % slides.length;
-
   slides[currentSlide].classList.add("active");
   dots[currentSlide].classList.add("active");
 }
@@ -146,21 +270,17 @@ function nextSlide() {
   showSlide(currentSlide + 1);
   resetSlider();
 }
-
 function prevSlide() {
   showSlide(currentSlide - 1);
   resetSlider();
 }
-
 function goToSlide(index) {
   showSlide(index);
   resetSlider();
 }
-
 function startSlider() {
   sliderInterval = setInterval(() => showSlide(currentSlide + 1), 5000);
 }
-
 function resetSlider() {
   clearInterval(sliderInterval);
   startSlider();
@@ -184,27 +304,21 @@ $("#searchInput").on("keyup", function () {
 
 let cart = JSON.parse(localStorage.getItem("cart")) || [];
 
-// 1. Thêm vào giỏ kèm Toast
 function addToCart(food, quantity) {
   let qty = parseInt(quantity);
   if (isNaN(qty) || qty < 1) qty = 1;
-
   const index = cart.findIndex((item) => String(item.id) === String(food.id));
-
   if (index >= 0) {
     cart[index].quantity += qty;
   } else {
     cart.push({ ...food, quantity: qty });
   }
-
   saveCart();
-
   $("#toastMsg").text(`Đã thêm ${qty} ${food.TenMon} thành công!`);
   const toast = new bootstrap.Toast(document.getElementById("cartToast"));
   toast.show();
 }
 
-// 2. Hiển thị giỏ hàng
 function renderCart() {
   let html = "";
   let subtotal = 0;
@@ -251,7 +365,6 @@ function renderCart() {
   $("#cart-total").text(formatPrice(subtotal + shipping));
 }
 
-// 3. Tăng/Giảm số lượng
 function updateCartQty(id, delta) {
   const item = cart.find((i) => String(i.id) === String(id));
   if (item) {
@@ -262,7 +375,6 @@ function updateCartQty(id, delta) {
   }
 }
 
-// 4. Xóa món kèm SweetAlert2
 function removeCartItem(id) {
   Swal.fire({
     title: "Bạn muốn xóa món?",
@@ -304,22 +416,18 @@ function showCart() {
   cartModal.show();
 }
 
-// 5. Thanh toán
 function checkout() {
   if (cart.length === 0) {
     showMessage("Giỏ hàng đang trống!", "warning");
     return;
   }
-
   const name = $("#cus-name").val().trim();
   const phone = $("#cus-phone").val().trim();
   const address = $("#cus-address").val().trim();
-
   if (isEmpty(name) || isEmpty(phone) || isEmpty(address)) {
     showMessage("Vui lòng điền đầy đủ thông tin giao hàng!", "warning");
     return;
   }
-
   const orderHistory = JSON.parse(localStorage.getItem("orderHistory")) || [];
   orderHistory.push({
     date: new Date().toLocaleString("vi-VN"),
@@ -332,7 +440,6 @@ function checkout() {
       cart.reduce((sum, item) => sum + item.Gia * item.quantity, 0) + 20000,
   });
   localStorage.setItem("orderHistory", JSON.stringify(orderHistory));
-
   const paymentMsg =
     selectedPayment === "cod"
       ? "Vui lòng chuẩn bị tiền mặt khi nhận hàng 💵"
@@ -362,14 +469,12 @@ $("#loginForm").submit(function (e) {
   const username = $("#loginUsername").val();
   const password = $("#loginPassword").val();
   const savedUser = JSON.parse(localStorage.getItem("user"));
-
   const isDefaultAdmin =
     username === AUTH_CONFIG.adminUser && password === AUTH_CONFIG.adminPass;
   const isRegisteredUser =
     savedUser &&
     username === savedUser.username &&
     password === savedUser.password;
-
   if (isDefaultAdmin || isRegisteredUser) {
     localStorage.setItem("isLogin", "true");
     updateUserDropdown();
@@ -382,11 +487,9 @@ $("#loginForm").submit(function (e) {
 
 $("#registerForm").submit(function (e) {
   e.preventDefault();
-
   const username = $("#registerUsername").val().trim();
   const password = $("#registerPassword").val().trim();
   const confirmPassword = $("#confirmPassword").val().trim();
-
   if (isEmpty(username)) {
     showMessage("Username không được để trống", "warning");
     return;
@@ -403,18 +506,15 @@ $("#registerForm").submit(function (e) {
     showMessage("Password phải từ 6 ký tự", "warning");
     return;
   }
-
   const regexPassword = /^(?=.*[A-Za-z])(?=.*\d).+$/;
   if (!regexPassword.test(password)) {
     showMessage("Password phải có chữ và số", "warning");
     return;
   }
-
   if (password !== confirmPassword) {
     showMessage("Mật khẩu nhập lại không đúng", "warning");
     return;
   }
-
   const user = { username, password };
   localStorage.setItem("user", JSON.stringify(user));
   Swal.fire("Thành công", "Đăng ký thành công!", "success");
@@ -432,16 +532,14 @@ function updateUserDropdown() {
   const isLogin = localStorage.getItem("isLogin") === "true";
   const savedUser = JSON.parse(localStorage.getItem("user") || "null");
   const name = isLogin ? (savedUser ? savedUser.username : "Admin") : null;
-
   const greet = document.getElementById("dropGreet");
   const sub = document.getElementById("dropSubtext");
   const label = document.getElementById("userBtnLabel");
-
   if (greet)
     greet.textContent = isLogin ? `Xin chào, ${name}!` : "Xin chào, Khách!";
   if (sub)
     sub.textContent = isLogin
-      ? `Đã đăng nhập thành công`
+      ? "Đã đăng nhập thành công"
       : "Đăng nhập để xem đơn hàng";
   if (label) label.textContent = isLogin ? name : "Tôi";
 }
@@ -451,7 +549,6 @@ function updateUserDropdown() {
 function showOrderHistory() {
   const history = JSON.parse(localStorage.getItem("orderHistory")) || [];
   let html = "";
-
   if (history.length === 0) {
     html = `<p class="text-center text-muted">Bạn chưa có đơn hàng nào.</p>`;
   } else {
@@ -472,7 +569,6 @@ function showOrderHistory() {
       `;
       });
   }
-
   $("#order-history-body").html(html);
   const modal = new bootstrap.Modal(
     document.getElementById("orderHistoryModal"),
@@ -494,12 +590,6 @@ function toggleDarkMode() {
   }
 }
 
-if (localStorage.getItem("darkMode") === "on") {
-  document.body.classList.add("dark-mode");
-  document.getElementById("dark-icon") &&
-    document.getElementById("dark-icon").classList.replace("fa-moon", "fa-sun");
-}
-
 // ================= SEARCH TOGGLE =================
 
 function toggleSearch() {
@@ -510,19 +600,16 @@ function toggleSearch() {
 
 const bttBtn = document.getElementById("backToTop");
 const bttCircle = document.getElementById("bttCircle");
-const bttCircumference = 2 * Math.PI * 18; // r=18 → ~113
+const bttCircumference = 2 * Math.PI * 18;
 
 window.addEventListener("scroll", function () {
   const scrollTop = window.scrollY;
   const docHeight = document.documentElement.scrollHeight - window.innerHeight;
   const progress = docHeight > 0 ? scrollTop / docHeight : 0;
-
-  if (bttBtn) {
-    bttBtn.style.display = scrollTop > 300 ? "flex" : "none";
-  }
+  if (bttBtn) bttBtn.style.display = scrollTop > 300 ? "flex" : "none";
   if (bttCircle) {
-    const offset = bttCircumference - progress * bttCircumference;
-    bttCircle.style.strokeDashoffset = offset;
+    bttCircle.style.strokeDashoffset =
+      bttCircumference - progress * bttCircumference;
   }
 });
 
@@ -545,3 +632,104 @@ function selectPayment(method) {
     .classList.toggle("active", method === "cod");
 }
 window.selectPayment = selectPayment;
+
+// ================= CHUYỂN NGÔN NGỮ VI / EN =================
+
+const TRANSLATIONS = {
+  vi: {
+    navHome: "Trang chủ",
+    navMenu: "Thực đơn",
+    navCategories: "Danh mục",
+    navContact: "Liên hệ",
+    comboLabel: "Ưu đãi hôm nay",
+    comboTitle: "🎁 Combo Tiết Kiệm",
+    comboDesc: "Chọn combo — ăn ngon hơn, tiết kiệm hơn",
+    categoryTitle: "Danh mục món ăn",
+    menuTitle: "🔥 Món ăn nổi bật",
+    filterAll: "Tất cả",
+    filterLow: "Dưới 100k",
+    filterHigh: "Trên 100k",
+    sortDefault: "Sắp xếp",
+    sortAsc: "Giá tăng dần",
+    sortDesc: "Giá giảm dần",
+    addToCart: "Thêm vào giỏ",
+    detail: "Chi tiết",
+    loginBtn: "Đăng nhập",
+    registerLink: "Đăng ký ngay",
+    noAccount: "Chưa có tài khoản?",
+    haveAccount: "Đã có tài khoản?",
+    loginLink: "Đăng nhập",
+    userMe: "Tôi",
+    userHistory: "Lịch sử đơn hàng",
+    userAdmin: "Quản trị",
+    userLogout: "Đăng xuất",
+    userLogin: "Đăng nhập",
+    greeting: "Xin chào, Khách!",
+    greetingSub: "Đăng nhập để xem đơn hàng",
+  },
+  en: {
+    navHome: "Home",
+    navMenu: "Menu",
+    navCategories: "Categories",
+    navContact: "Contact",
+    comboLabel: "Today's Deals",
+    comboTitle: "🎁 Value Combos",
+    comboDesc: "Pick a combo — eat better, save more",
+    categoryTitle: "Food Categories",
+    menuTitle: "🔥 Featured Dishes",
+    filterAll: "All",
+    filterLow: "Under 100k",
+    filterHigh: "Over 100k",
+    sortDefault: "Sort by",
+    sortAsc: "Price: Low to High",
+    sortDesc: "Price: High to Low",
+    addToCart: "Add to Cart",
+    detail: "Details",
+    loginBtn: "Sign In",
+    registerLink: "Sign up now",
+    noAccount: "Don't have an account?",
+    haveAccount: "Already have an account?",
+    loginLink: "Sign in",
+    userMe: "Me",
+    userHistory: "Order History",
+    userAdmin: "Admin",
+    userLogout: "Sign Out",
+    userLogin: "Sign In",
+    greeting: "Hello, Guest!",
+    greetingSub: "Sign in to view your orders",
+  },
+};
+
+let currentLang = localStorage.getItem("lang") || "vi";
+
+function applyLanguage(lang) {
+  currentLang = lang;
+  localStorage.setItem("lang", lang);
+  const t = TRANSLATIONS[lang];
+
+  document.querySelectorAll("[data-lang-key]").forEach((el) => {
+    const key = el.getAttribute("data-lang-key");
+    if (t[key] !== undefined) el.innerHTML = t[key];
+  });
+
+  const btn = document.getElementById("lang-toggle-btn");
+  if (btn) {
+    btn.innerHTML =
+      lang === "vi"
+        ? `<span class="lang-flag">🇬🇧</span> EN`
+        : `<span class="lang-flag">🇻🇳</span> VI`;
+  }
+
+  const sortSelect = document.querySelector(".sort-select");
+  if (sortSelect && sortSelect.options.length >= 3) {
+    sortSelect.options[0].text = t.sortDefault;
+    sortSelect.options[1].text = t.sortAsc;
+    sortSelect.options[2].text = t.sortDesc;
+  }
+}
+
+function toggleLanguage() {
+  applyLanguage(currentLang === "vi" ? "en" : "vi");
+}
+
+window.toggleLanguage = toggleLanguage;

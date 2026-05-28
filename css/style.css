@@ -1459,8 +1459,9 @@ display: flex;
 
 /* =========================
    DARK MODE
+
 /* =========================
-   DARK MODE
+   DARK MODE (xanh lá - phù hợp với trang chủ)
 ========================= */
 
 body.dark-mode {
@@ -1473,9 +1474,7 @@ body.dark-mode .navbar {
   border-bottom-color: rgba(25, 135, 84, 0.25);
 }
 
-body.dark-mode .navbar .navbar-nav .nav-link {
-  color: #86c99a;
-}
+body.dark-mode .navbar .navbar-nav .nav-link { color: #86c99a; }
 
 body.dark-mode .navbar .navbar-nav .nav-link:hover,
 body.dark-mode .navbar .navbar-nav .nav-link.active {
@@ -1492,22 +1491,18 @@ body.dark-mode .info-box {
   border-color: rgba(25, 135, 84, 0.15);
 }
 
-body.dark-mode .food-card {
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.35);
-}
+body.dark-mode .food-card { box-shadow: 0 5px 15px rgba(0,0,0,0.35); }
 
 body.dark-mode .food-card:hover {
   border-color: #198754;
   box-shadow: 0 15px 30px rgba(25, 135, 84, 0.2) !important;
 }
 
-body.dark-mode .bg-white {
-  background: #122018 !important;
-}
+body.dark-mode .bg-white { background: #122018 !important; }
 
 body.dark-mode .modal-content {
   background: #122018;
-color: #dceee0;
+  color: #dceee0;
   border-color: rgba(25, 135, 84, 0.2);
 }
 
@@ -1526,9 +1521,7 @@ body.dark-mode .form-select:focus {
   box-shadow: 0 0 0 3px rgba(25, 135, 84, 0.18);
 }
 
-body.dark-mode .form-control::placeholder {
-  color: #6b9e78;
-}
+body.dark-mode .form-control::placeholder { color: #6b9e78; }
 
 body.dark-mode .combo-section {
   background: linear-gradient(160deg, #0c1f12 0%, #0f2417 50%, #0e1c13 100%);
@@ -1537,7 +1530,7 @@ body.dark-mode .combo-section {
 body.dark-mode .combo-card {
   background: #122018;
   border-color: rgba(25, 135, 84, 0.18);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
 }
 
 body.dark-mode .combo-card:hover {
@@ -1545,17 +1538,9 @@ body.dark-mode .combo-card:hover {
   box-shadow: 0 16px 40px rgba(25, 135, 84, 0.2);
 }
 
-body.dark-mode .combo-name {
-  color: #dceee0;
-}
-
-body.dark-mode .combo-items li {
-  color: #8fbf9a;
-}
-
-body.dark-mode .combo-old {
-  color: #5a7a62;
-}
+body.dark-mode .combo-name { color: #dceee0; }
+body.dark-mode .combo-items li { color: #8fbf9a; }
+body.dark-mode .combo-old { color: #5a7a62; }
 
 body.dark-mode .filter-bar {
   background: #122018;
@@ -1585,10 +1570,7 @@ body.dark-mode .sort-wrap {
   border-color: rgba(25, 135, 84, 0.3);
 }
 
-body.dark-mode .sort-select {
-  color: #86c99a;
-  background: transparent;
-}
+body.dark-mode .sort-select { color: #86c99a; background: transparent; }
 
 body.dark-mode .text-dark,
 body.dark-mode h1, body.dark-mode h2,
@@ -1597,27 +1579,21 @@ body.dark-mode h5, body.dark-mode h6 {
   color: #dceee0 !important;
 }
 
-body.dark-mode .text-muted {
-  color: #6b9e78 !important;
-}
+body.dark-mode .text-muted { color: #6b9e78 !important; }
 
 body.dark-mode .user-dropdown {
   background: #122018;
   border-color: rgba(25, 135, 84, 0.2);
 }
 
-body.dark-mode .user-menu-item {
-  color: #c0ddc8;
-}
+body.dark-mode .user-menu-item { color: #c0ddc8; }
 
 body.dark-mode .user-menu-item:hover {
   background: #1a2e20 !important;
   color: #4ade80 !important;
 }
 
-body.dark-mode .dropdown-divider {
-  border-color: rgba(25, 135, 84, 0.2);
-}
+body.dark-mode .dropdown-divider { border-color: rgba(25, 135, 84, 0.2); }
 
 body.dark-mode .payment-card {
   background: #1a2e20;
@@ -1631,17 +1607,165 @@ body.dark-mode .payment-card.active {
   border-color: #198754;
 }
 
-body.dark-mode .pm-title {
-  color: #dceee0;
+body.dark-mode .pm-title { color: #dceee0; }
+body.dark-mode .pm-sub { color: #6b9e78; }
+body.dark-mode #dark-icon { color: #4ade80; }
+
+
+/* =========================
+   COMBO CAROUSEL
+========================= */
+
+.combo-carousel-outer {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
 }
 
-body.dark-mode .pm-sub {
-  color: #6b9e78;
+.combo-carousel-viewport {
+  overflow: hidden;
+  width: 100%;
+  border-radius: 16px;
 }
 
-body.dark-mode #dark-icon {
-  color: #4ade80;
+.combo-carousel-track {
+  display: flex;
+  gap: 16px;
+  transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: transform;
+  padding: 8px 4px 12px;
 }
+
+.combo-slide-item {
+  flex: 0 0 calc(25% - 12px);
+  min-width: calc(25% - 12px);
+}
+
+@media (max-width: 991px) {
+  .combo-slide-item {
+    flex: 0 0 calc(50% - 8px);
+    min-width: calc(50% - 8px);
+  }
+}
+
+@media (max-width: 575px) {
+  .combo-slide-item {
+    flex: 0 0 100%;
+    min-width: 100%;
+  }
+}
+
+.combo-nav-btn {
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 2px solid rgba(25, 135, 84, 0.35);
+  background: white;
+  color: #198754;
+  font-size: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.25s ease;
+  box-shadow: 0 2px 10px rgba(25, 135, 84, 0.15);
+  z-index: 2;
+}
+
+.combo-nav-btn:hover {
+  background: #198754;
+  color: white;
+  border-color: #198754;
+  box-shadow: 0 4px 18px rgba(25, 135, 84, 0.4);
+  transform: scale(1.08);
+}
+
+.combo-nav-prev { margin-right: 10px; }
+.combo-nav-next { margin-left: 10px; }
+
+.combo-dots-row {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 20px;
+}
+
+.combo-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #d1d5db;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+}
+
+.combo-dot.active {
+  background: #198754;
+  transform: scale(1.35);
+  border-color: rgba(25, 135, 84, 0.35);
+}
+
+.combo-dot:hover { background: #5aab7a; }
+
+body.dark-mode .combo-nav-btn {
+  background: #1a2e20;
+  color: #86c99a;
+  border-color: rgba(25, 135, 84, 0.3);
+}
+
+body.dark-mode .combo-nav-btn:hover {
+  background: #198754;
+  color: white;
+}
+
+body.dark-mode .combo-dot { background: #3a5a42; }
+body.dark-mode .combo-dot.active { background: #198754; }
+
+
+/* =========================
+   LANGUAGE TOGGLE BUTTON
+========================= */
+
+#lang-toggle-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 7px 14px;
+  border-radius: 50px;
+  border: 1.5px solid rgba(25, 135, 84, 0.4);
+  background: transparent;
+  color: #198754;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+}
+
+#lang-toggle-btn:hover {
+  background: #198754;
+  color: white;
+  border-color: #198754;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(25, 135, 84, 0.3);
+}
+
+.lang-flag { font-size: 15px; line-height: 1; }
+
+body.dark-mode #lang-toggle-btn {
+  border-color: rgba(134, 201, 154, 0.4);
+  color: #86c99a;
+}
+
+body.dark-mode #lang-toggle-btn:hover {
+  background: #198754;
+  color: white;
+}
+
 
 /* =========================
    CART ITEM
@@ -1655,22 +1779,16 @@ body.dark-mode #dark-icon {
   transition: background 0.3s;
 }
 
-.cart-item-row:hover {
-  background-color: #f9f9f9;
-}
+.cart-item-row:hover { background-color: #f9f9f9; }
+
 
 /* =========================
    MOBILE
 ========================= */
 @media (max-width: 768px) {
-  .hero {
-    height: 400px;
-  }
+  .hero { height: 400px; }
+  .hero h1 { font-size: 40px; }
 
-  .hero h1 {
-    font-size: 40px;
-  }
-/* Sidebar thành drawer trượt từ trái */
   .sidebar {
     position: fixed;
     left: -280px;
@@ -1687,22 +1805,11 @@ body.dark-mode #dark-icon {
     box-shadow: 8px 0 40px rgba(0,0,0,0.35);
   }
 
-  /* Hiện nút đóng & mobile header */
-  .sidebar-close-btn {
-    display: flex;
-  }
+  .sidebar-close-btn { display: flex; }
+  .admin-mobile-header { display: flex; }
 
-  .admin-mobile-header {
-    display: flex;
-  }
-
-  .main-content {
-    padding: 20px;
-  }
-
-  .admin-mobile-header {
-    margin: -20px -20px 24px;
-  }
+  .main-content { padding: 20px; }
+  .admin-mobile-header { margin: -20px -20px 24px; }
 
   .top-bar {
     flex-direction: column;
@@ -1715,16 +1822,7 @@ body.dark-mode #dark-icon {
     justify-content: center;
   }
 
-  .footer-logo {
-    font-size: 34px;
-  }
-
-  .footer-title {
-    margin-top: 20px;
-    font-size: 26px;
-  }
-
-  .admin-stat-card h2 {
-    font-size: 28px;
-  }
+  .footer-logo { font-size: 34px; }
+  .footer-title { margin-top: 20px; font-size: 26px; }
+  .admin-stat-card h2 { font-size: 28px; }
 }

@@ -26,15 +26,19 @@
 
         <div class="collapse navbar-collapse" id="navbarNav">
           <ul class="navbar-nav mx-auto gap-3">
-            <li class="nav-item"><a class="nav-link" href="#home">Trang chủ</a></li>
-            <li class="nav-item"><a class="nav-link" href="#menu">Thực đơn</a></li>
-            <li class="nav-item"><a class="nav-link" href="#categories">Danh mục</a></li>
-            <li class="nav-item"><a class="nav-link" href="#contact">Liên hệ</a></li>
+            <li class="nav-item"><a class="nav-link" href="#home" data-lang-key="navHome">Trang chủ</a></li>
+            <li class="nav-item"><a class="nav-link" href="#menu" data-lang-key="navMenu">Thực đơn</a></li>
+            <li class="nav-item"><a class="nav-link" href="#categories" data-lang-key="navCategories">Danh mục</a></li>
+            <li class="nav-item"><a class="nav-link" href="#contact" data-lang-key="navContact">Liên hệ</a></li>
           </ul>
 
           <div class="d-flex align-items-center gap-3">
             <button class="btn btn-outline-secondary rounded-circle border-0" onclick="toggleDarkMode()">
               <i class="fa-solid fa-moon" id="dark-icon"></i>
+            </button>
+
+            <button id="lang-toggle-btn" onclick="toggleLanguage()">
+              <span class="lang-flag">🇬🇧</span> EN
             </button>
 
             <div class="search-wrapper">
@@ -50,7 +54,7 @@
             <div class="dropdown">
               <button class="btn user-btn" id="userDropBtn" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                 <i class="fa-solid fa-user" id="userBtnIcon"></i>
-                <span class="user-btn-label" id="userBtnLabel">Tôi</span>
+                <span class="user-btn-label" id="userBtnLabel" data-lang-key="userMe">Tôi</span>
               </button>
               <ul class="dropdown-menu dropdown-menu-end user-dropdown">
                 <li>
@@ -59,8 +63,8 @@
                       <i class="fa-solid fa-user"></i>
                     </div>
                     <div>
-                      <div class="user-greet" id="dropGreet">Xin chào, Khách!</div>
-                      <div class="user-subtext" id="dropSubtext">Đăng nhập để xem đơn hàng</div>
+                      <div class="user-greet" id="dropGreet" data-lang-key="greeting">Xin chào, Khách!</div>
+                      <div class="user-subtext" id="dropSubtext" data-lang-key="greetingSub">Đăng nhập để xem đơn hàng</div>
                     </div>
                   </div>
                 </li>
@@ -69,7 +73,7 @@
                     <span class="menu-icon-wrap" style="background:#e8f5e9;color:#198754">
                       <i class="fa-solid fa-right-to-bracket"></i>
                     </span>
-                    Đăng nhập
+                    <span data-lang-key="userLogin">Đăng nhập</span>
                   </a>
                 </li>
                 <li>
@@ -77,7 +81,7 @@
                     <span class="menu-icon-wrap" style="background:#e3f2fd;color:#1565c0">
                       <i class="fa-solid fa-clock-rotate-left"></i>
                     </span>
-                    Lịch sử đơn hàng
+                    <span data-lang-key="userHistory">Lịch sử đơn hàng</span>
                   </a>
                 </li>
                 <li>
@@ -85,7 +89,7 @@
                     <span class="menu-icon-wrap" style="background:#f3e5f5;color:#7b1fa2">
                       <i class="fa-solid fa-user-shield"></i>
                     </span>
-                    Quản trị
+                    <span data-lang-key="userAdmin">Quản trị</span>
                   </a>
                 </li>
                 <li><hr class="dropdown-divider my-2" /></li>
@@ -94,7 +98,7 @@
                     <span class="menu-icon-wrap" style="background:#ffebee;color:#c62828">
                       <i class="fa-solid fa-right-from-bracket"></i>
                     </span>
-                    Đăng xuất
+                    <span data-lang-key="userLogout">Đăng xuất</span>
                   </a>
                 </li>
               </ul>
@@ -122,10 +126,10 @@
                 <label class="form-label">Password</label>
                 <input type="password" id="loginPassword" class="form-control" />
               </div>
-              <button class="btn btn-success w-100 rounded-pill">Đăng nhập</button>
+              <button class="btn btn-success w-100 rounded-pill" data-lang-key="loginBtn">Đăng nhập</button>
               <p class="text-center mt-3">
-                Chưa có tài khoản?
-                <span class="text-success fw-bold switch-form" onclick="showRegister()">Đăng ký ngay</span>
+                <span data-lang-key="noAccount">Chưa có tài khoản?</span>
+                <span class="text-success fw-bold switch-form" onclick="showRegister()" data-lang-key="registerLink">Đăng ký ngay</span>
               </p>
             </form>
             <form id="registerForm" class="d-none">
@@ -143,8 +147,8 @@
               </div>
               <button class="btn btn-success w-100 rounded-pill">Đăng ký</button>
               <p class="text-center mt-3">
-                Đã có tài khoản?
-                <span class="text-success fw-bold switch-form" onclick="showLogin()">Đăng nhập</span>
+                <span data-lang-key="haveAccount">Đã có tài khoản?</span>
+                <span class="text-success fw-bold switch-form" onclick="showLogin()" data-lang-key="loginLink">Đăng nhập</span>
               </p>
             </form>
           </div>
@@ -156,7 +160,6 @@
     <section id="home" class="hero-slider">
       <div class="slider-track">
 
-        <!-- Slide 1: Không gian nhà hàng -->
         <div class="slide active" style="background-image:url('https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=1920&q=80')">
           <div class="slide-overlay"></div>
           <div class="slide-content text-white text-center">
@@ -167,7 +170,6 @@
           </div>
         </div>
 
-        <!-- Slide 2: Món ăn nổi bật -->
         <div class="slide" style="background-image:url('https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=1920&q=80')">
           <div class="slide-overlay"></div>
           <div class="slide-content text-white text-center">
@@ -178,7 +180,6 @@
           </div>
         </div>
 
-        <!-- Slide 3: Không gian ấm cúng -->
         <div class="slide" style="background-image:url('https://images.unsplash.com/photo-1537047902294-62a40c20a6ae?w=1920&q=80')">
           <div class="slide-overlay"></div>
           <div class="slide-content text-white text-center">
@@ -189,7 +190,6 @@
           </div>
         </div>
 
-        <!-- Slide 4: Ẩm thực Việt phong phú -->
         <div class="slide" style="background-image:url('https://images.unsplash.com/photo-1559847844-5315695dadae?w=1920&q=80')">
           <div class="slide-overlay"></div>
           <div class="slide-content text-white text-center">
@@ -202,11 +202,9 @@
 
       </div>
 
-      <!-- NÚT ĐIỀU HƯỚNG -->
       <button class="slider-btn slider-prev" onclick="prevSlide()">&#10094;</button>
       <button class="slider-btn slider-next" onclick="nextSlide()">&#10095;</button>
 
-      <!-- CHẤM ĐIỀU HƯỚNG -->
       <div class="slider-dots">
         <span class="dot active" onclick="goToSlide(0)"></span>
         <span class="dot" onclick="goToSlide(1)"></span>
@@ -220,14 +218,12 @@
       <div class="container">
         <div class="combo-header" data-aos="fade-up">
           <div>
-            <span class="combo-label">Ưu đãi hôm nay</span>
-            <h2 class="combo-title">🎁 Combo Tiết Kiệm</h2>
-            <p class="combo-desc">Chọn combo — ăn ngon hơn, tiết kiệm hơn</p>
+            <span class="combo-label" data-lang-key="comboLabel">Ưu đãi hôm nay</span>
+            <h2 class="combo-title" data-lang-key="comboTitle">🎁 Combo Tiết Kiệm</h2>
+            <p class="combo-desc" data-lang-key="comboDesc">Chọn combo — ăn ngon hơn, tiết kiệm hơn</p>
           </div>
         </div>
-        <div class="row g-4" id="combo-list" data-aos="fade-up" data-aos-delay="100">
-          <!-- render by JS -->
-        </div>
+        <div id="combo-list" data-aos="fade-up" data-aos-delay="100"></div>
       </div>
     </section>
 
@@ -236,12 +232,12 @@
       <div class="row">
         <div class="col-lg-9">
           <div id="categories" class="d-flex justify-content-between align-items-center mb-4">
-            <h2 class="fw-bold">Danh mục món ăn</h2>
+            <h2 class="fw-bold" data-lang-key="categoryTitle">Danh mục món ăn</h2>
           </div>
           <div class="row g-4 mb-5" id="categories-list" data-aos="fade-right"></div>
 
           <div id="menu" class="d-flex justify-content-between align-items-center mb-4">
-            <h2 class="fw-bold">🔥 Món ăn nổi bật</h2>
+            <h2 class="fw-bold" data-lang-key="menuTitle">🔥 Món ăn nổi bật</h2>
           </div>
 
           <div class="text-center my-5" id="loading">
@@ -252,21 +248,21 @@
           <div class="filter-bar mb-4" data-aos="fade-up">
             <div class="filter-pills">
               <button class="filter-pill active" onclick="filterPrice('all', this)">
-                <i class="fa-solid fa-border-all me-1"></i> Tất cả
+                <i class="fa-solid fa-border-all me-1"></i> <span data-lang-key="filterAll">Tất cả</span>
               </button>
               <button class="filter-pill" onclick="filterPrice('low', this)">
-                <i class="fa-solid fa-tag me-1"></i> Dưới 100k
+                <i class="fa-solid fa-tag me-1"></i> <span data-lang-key="filterLow">Dưới 100k</span>
               </button>
               <button class="filter-pill" onclick="filterPrice('high', this)">
-                <i class="fa-solid fa-fire me-1"></i> Trên 100k
+                <i class="fa-solid fa-fire me-1"></i> <span data-lang-key="filterHigh">Trên 100k</span>
               </button>
             </div>
             <div class="sort-wrap">
               <i class="fa-solid fa-arrow-up-wide-short sort-icon"></i>
               <select class="sort-select" onchange="sortFood(this.value)">
-                <option value="default">Sắp xếp</option>
-                <option value="asc">Giá tăng dần</option>
-                <option value="desc">Giá giảm dần</option>
+                <option value="default" data-lang-key="sortDefault">Sắp xếp</option>
+                <option value="asc" data-lang-key="sortAsc">Giá tăng dần</option>
+                <option value="desc" data-lang-key="sortDesc">Giá giảm dần</option>
               </select>
             </div>
           </div>
@@ -326,7 +322,6 @@
                 <input type="text" id="cus-phone" class="form-control mb-2" placeholder="Số điện thoại" />
                 <input type="text" id="cus-address" class="form-control mb-3" placeholder="Địa chỉ" />
 
-                <!-- PHƯƠNG THỨC THANH TOÁN -->
                 <h6 class="fw-bold mb-2">Phương thức thanh toán</h6>
                 <div class="payment-methods mb-3">
                   <label class="payment-card active" id="pm-online" onclick="selectPayment('online')">
