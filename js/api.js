@@ -22,7 +22,7 @@ async function getCategories() {
     html += `
       <div class="col-6 col-md-4 col-lg-2">
         <div class="category-card" data-cat="${category.TenDanhMuc}" onclick="filterCategory('${category.TenDanhMuc}')">
-          <div class="cat-active-badge"><i class="fa-solid fa-star me-1"></i>Nổi bật</div>
+         
           <img src="${category.HinhAnh}" />
           <h6 class="mt-2">${category.TenDanhMuc}</h6>
         </div>
